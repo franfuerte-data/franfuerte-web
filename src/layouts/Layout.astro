@@ -1,0 +1,23 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import type { ImageMetadata } from 'astro';
+import FallbackImage from '../assets/blog-placeholder-1.jpg';
+
+interface Props {
+	title: string;
+	description: string;
+	image?: ImageMetadata;
+}
+
+const { title, description, image = FallbackImage } = Astro.props;
+---
+
+<!doctype html>
+<html lang="es" class="scroll-smooth">
+	<head>
+		<BaseHead title={title} description={description} image={image} />
+	</head>
+	<body>
+		<slot />
+	</body>
+</html>
