@@ -1,0 +1,315 @@
+---
+title: "Arquitectura Medallion en Microsoft Fabric: Mejores Prácticas 2026"
+description: "Implementa la arquitectura Medallion (Bronze, Silver, Gold) en Microsoft Fabric con PySpark y SQL. Guía completa con patrones de diseño, código de producción y referencias a los principales expertos del sector."
+pubDate: "2026-07-15"
+heroImage: '../../assets/blog-placeholder-4.jpg'
+---
+
+La **Arquitectura Medallion** se ha convertido en el estándar de facto para construir plataformas de datos modernas. En Microsoft Fabric, donde Lakehouse, Spark y Power BI conviven en el mismo ecosistema, aplicar Medallion correctamente marca la diferencia entre un proyecto de datos que escala y uno que se convierte en deuda técnica.
+
+## ¿Por qué Medallion es el estándar?
+
+La arquitectura Medallion (propuesta originalmente por Databricks y adoptada en el ecosistema Azure/Fabric) divide el pipeline de datos en **tres zonas de calidad progresiva**:
+
+<div style={{width:"100%",overflowX:"auto",margin:"2rem 0"}}>
+<svg viewBox="0 0 820 220" xmlns="http://www.w3.org/2000/svg" style={{width:"100%",maxWidth:"820px",display:"block"}}>
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#475569" />
+    </marker>
+    <linearGradient id="bronzeGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stopColor="rgba(180,100,30,0.25)" />
+      <stop offset="100%" stopColor="rgba(120,60,10,0.15)" />
+    </linearGradient>
+    <linearGradient id="silverGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stopColor="rgba(100,130,200,0.25)" />
+      <stop offset="100%" stopColor="rgba(60,90,160,0.15)" />
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stopColor="rgba(200,160,20,0.25)" />
+      <stop offset="100%" stopColor="rgba(140,100,10,0.15)" />
+    </linearGradient>
+  </defs>
+
+  <rect x="10" y="55" width="220" height="110" rx="14" fill="url(#bronzeGrad)" stroke="#b45309" strokeWidth="1.5"/>
+  <text x="120" y="90" textAnchor="middle" fill="#fbbf24" fontSize="13" fontWeight="700" fontFamily="Arial,sans-serif">BRONZE</text>
+  <text x="120" y="110" textAnchor="middle" fill="#d1d5db" fontSize="11" fontFamily="Arial,sans-serif">Datos raw, sin transformar</text>
+  <text x="120" y="128" textAnchor="middle" fill="#9ca3af" fontSize="10" fontFamily="Arial,sans-serif">CSV · JSON · Parquet · Avro</text>
+  <text x="120" y="145" textAnchor="middle" fill="#9ca3af" fontSize="10" fontFamily="Arial,sans-serif">Inmutable · Particionado</text>
+
+  <line x1="235" y1="110" x2="285" y2="110" stroke="#475569" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+  <text x="260" y="103" textAnchor="middle" fill="#6b7280" fontSize="9" fontFamily="Arial,sans-serif">Spark</text>
+
+  <rect x="290" y="35" width="240" height="150" rx="14" fill="url(#silverGrad)" stroke="#4f6aa0" strokeWidth="1.5"/>
+  <text x="410" y="70" textAnchor="middle" fill="#93c5fd" fontSize="13" fontWeight="700" fontFamily="Arial,sans-serif">SILVER</text>
+  <text x="410" y="90" textAnchor="middle" fill="#d1d5db" fontSize="11" fontFamily="Arial,sans-serif">Datos limpios y validados</text>
+  <text x="410" y="108" textAnchor="middle" fill="#9ca3af" fontSize="10" fontFamily="Arial,sans-serif">Delta Lake · Tipado correcto</text>
+  <text x="410" y="124" textAnchor="middle" fill="#9ca3af" fontSize="10" fontFamily="Arial,sans-serif">Deduplicado · Sin nulos criticos</text>
+  <text x="410" y="140" textAnchor="middle" fill="#9ca3af" fontSize="10" fontFamily="Arial,sans-serif">Audit trail de rechazados</text>
+  <text x="410" y="156" textAnchor="middle" fill="#9ca3af" fontSize="10" fontFamily="Arial,sans-serif">Upsert (merge)</text>
+
+  <line x1="535" y1="110" x2="585" y2="110" stroke="#475569" strokeWidth="2" markerEnd="url(#arrowhead)"/>
+  <text x="560" y="103" textAnchor="middle" fill="#6b7280" fontSize="9" fontFamily="Arial,sans-serif">Spark SQL</text>
+
+  <rect x="590" y="15" width="220" height="190" rx="14" fill="url(#goldGrad)" stroke="#a16207" strokeWidth="1.5"/>
+  <text x="700" y="50" textAnchor="middle" fill="#fde047" fontSize="13" fontWeight="700" fontFamily="Arial,sans-serif">GOLD</text>
+  <text x="700" y="70" textAnchor="middle" fill="#d1d5db" fontSize="11" fontFamily="Arial,sans-serif">Modelo dimensional</text>
+  <text x="700" y="88" textAnchor="middle" fill="#9ca3af" fontSize="10" fontFamily="Arial,sans-serif">Star schema · Dim + Fact</text>
+  <text x="700" y="104" textAnchor="middle" fill="#9ca3af" fontSize="10" fontFamily="Arial,sans-serif">KPIs calculados</text>
+  <text x="700" y="120" textAnchor="middle" fill="#9ca3af" fontSize="10" fontFamily="Arial,sans-serif">Listo para Power BI</text>
+  <text x="700" y="136" textAnchor="middle" fill="#9ca3af" fontSize="10" fontFamily="Arial,sans-serif">DirectLake compatible</text>
+  <text x="700" y="152" textAnchor="middle" fill="#9ca3af" fontSize="10" fontFamily="Arial,sans-serif">Optimizado para queries BI</text>
+  <text x="700" y="168" textAnchor="middle" fill="#fde047" fontSize="10" fontWeight="600" fontFamily="Arial,sans-serif">Power BI · APIs · ML</text>
+</svg>
+</div>
+
+El principio fundamental es simple: **nunca modifiques los datos de origen**. Cada capa añade calidad sin destruir la anterior, lo que permite auditoría, rollback y reprocesamiento sin perder el dato original.
+
+## Capa Bronze: Los datos tal como llegan
+
+La capa Bronze es tu **zona de aterrizaje (landing zone)**. Los datos llegan exactamente como los recibes de los sistemas fuente, sin transformaciones de negocio.
+
+Principios clave:
+- **Inmutabilidad**: los archivos raw no se modifican nunca
+- **Particionado por fecha de ingesta** (no por fecha del negocio)
+- **No inferir tipos**: en Bronze todo es string o se preserva tal cual
+- **Metadata de trazabilidad**: siempre añade `_ingestion_ts`, `_source_file`, `_batch_id`
+
+```python
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import current_timestamp, input_file_name, lit
+from datetime import datetime
+
+spark = SparkSession.builder.getOrCreate()
+
+BATCH_ID    = datetime.now().strftime("%Y%m%d_%H%M%S")
+SOURCE_NAME = "erp_sap_ventas"
+
+# Leer archivos raw — NO inferimos tipos en Bronze
+df_raw = spark.read.format("csv") \
+    .option("header", "true") \
+    .option("inferSchema", "false") \
+    .option("encoding", "UTF-8") \
+    .load(f"Files/landing/{SOURCE_NAME}/")
+
+# Solo metadata de ingesta, cero transformaciones de negocio
+df_bronze = df_raw \
+    .withColumn("_ingestion_ts",   current_timestamp()) \
+    .withColumn("_source_file",    input_file_name()) \
+    .withColumn("_batch_id",       lit(BATCH_ID)) \
+    .withColumn("_source_system",  lit(SOURCE_NAME))
+
+# Particionado por año/mes de ingesta para gestión del ciclo de vida
+df_bronze.write \
+    .format("delta") \
+    .mode("append") \
+    .partitionBy("_ingestion_year", "_ingestion_month") \
+    .saveAsTable("bronze.ventas_raw")
+
+print(f"Bronze OK: {df_bronze.count():,} registros [Batch: {BATCH_ID}]")
+```
+
+## Capa Silver: Datos de confianza
+
+La capa Silver es donde ocurre la mayor parte del trabajo de ingeniería. Aquí transformamos datos raw en datos **limpios, tipados y confiables**.
+
+Transformaciones típicas:
+- Conversión de tipos (strings a fechas, enteros, decimales)
+- Deduplicación con lógica de ventana
+- Validación de reglas de negocio con audit trail de rechazados
+- Normalización de valores (mayúsculas, trimming)
+- Upsert (merge) para gestionar actualizaciones incrementales
+
+```python
+from pyspark.sql.functions import (
+    col, to_date, trim, upper, when, lit, current_timestamp,
+    row_number
+)
+from pyspark.sql.window import Window
+from pyspark.sql.types import DecimalType, IntegerType
+from delta.tables import DeltaTable
+
+spark = SparkSession.builder.getOrCreate()
+
+df_bronze = spark.table("bronze.ventas_raw")
+
+# 1. Tipado y limpieza
+df_typed = df_bronze \
+    .withColumn("fecha_venta",  to_date(col("fecha_raw"), "dd/MM/yyyy")) \
+    .withColumn("importe_neto", col("importe_raw").cast(DecimalType(18, 2))) \
+    .withColumn("cantidad",     col("cantidad_raw").cast(IntegerType())) \
+    .withColumn("canal",        upper(trim(col("canal_raw"))))
+
+# 2. Audit trail: registros inválidos a tabla de rechazados
+df_invalid = df_typed.filter(
+    col("fecha_venta").isNull() |
+    col("importe_neto").isNull() |
+    (col("importe_neto") <= 0)
+).withColumn("_reject_reason",
+    when(col("fecha_venta").isNull(),   lit("FECHA_INVALIDA"))
+    .when(col("importe_neto").isNull(), lit("IMPORTE_NULO"))
+    .otherwise(lit("IMPORTE_NO_POSITIVO"))
+)
+
+df_invalid.write.format("delta").mode("append") \
+    .saveAsTable("silver.ventas_rechazadas")
+
+# 3. Deduplicar — quedarse con el registro más reciente por venta_id
+window = Window.partitionBy("venta_id").orderBy(col("_ingestion_ts").desc())
+df_valid = df_typed \
+    .filter(col("fecha_venta").isNotNull() & (col("importe_neto") > 0)) \
+    .withColumn("_rn", row_number().over(window)) \
+    .filter(col("_rn") == 1).drop("_rn")
+
+# 4. Upsert incremental con Delta merge
+if DeltaTable.isDeltaTable(spark, "Tables/silver/fact_ventas"):
+    DeltaTable.forName(spark, "silver.fact_ventas") \
+        .alias("t") \
+        .merge(df_valid.alias("s"), "t.venta_id = s.venta_id") \
+        .whenMatchedUpdateAll() \
+        .whenNotMatchedInsertAll() \
+        .execute()
+else:
+    df_valid.write.format("delta").mode("overwrite") \
+        .saveAsTable("silver.fact_ventas")
+
+print(f"Silver OK:     {df_valid.count():,} registros")
+print(f"Rechazados:    {df_invalid.count():,} en audit trail")
+```
+
+## Capa Gold: El modelo de negocio
+
+La capa Gold está diseñada para el **consumo final**: Power BI, APIs de negocio, modelos de ML. Los datos hablan el lenguaje del negocio, no el de los sistemas fuente.
+
+```python
+# Modelo dimensional Gold con Spark SQL
+spark.sql("""
+    CREATE OR REPLACE TABLE gold.dim_fecha AS
+    SELECT DISTINCT
+        CAST(DATE_FORMAT(fecha_venta, 'yyyyMMdd') AS INT) AS fecha_id,
+        fecha_venta,
+        YEAR(fecha_venta)                                  AS anio,
+        QUARTER(fecha_venta)                               AS trimestre,
+        MONTH(fecha_venta)                                 AS mes,
+        WEEKOFYEAR(fecha_venta)                            AS semana,
+        DAYOFWEEK(fecha_venta)                             AS dia_semana,
+        CASE WHEN DAYOFWEEK(fecha_venta) IN (1,7)
+             THEN true ELSE false END                      AS es_fin_semana
+    FROM silver.fact_ventas
+    ORDER BY fecha_id
+""")
+
+spark.sql("""
+    CREATE OR REPLACE TABLE gold.fact_ventas_kpi AS
+    SELECT
+        CAST(DATE_FORMAT(v.fecha_venta, 'yyyyMMdd') AS INT) AS fecha_id,
+        v.canal,
+        v.cliente_id,
+        v.producto_id,
+        SUM(v.cantidad)                 AS unidades_vendidas,
+        SUM(v.importe_neto)             AS ingresos_netos,
+        SUM(v.importe_neto * 0.21)      AS iva_total,
+        SUM(v.importe_neto * 1.21)      AS ingresos_brutos,
+        COUNT(DISTINCT v.venta_id)      AS num_transacciones,
+        AVG(v.importe_neto)             AS ticket_medio
+    FROM silver.fact_ventas v
+    WHERE v.fecha_venta >= '2024-01-01'
+    GROUP BY
+        CAST(DATE_FORMAT(v.fecha_venta, 'yyyyMMdd') AS INT),
+        v.canal, v.cliente_id, v.producto_id
+""")
+
+print("Gold OK: Modelo dimensional actualizado")
+```
+
+## Mejores prácticas que marcan la diferencia
+
+### 1. Nomenclatura consistente entre capas
+
+```
+lh_bronze_{dominio}   → lh_bronze_ventas, lh_bronze_rrhh
+lh_silver_{dominio}   → lh_silver_ventas
+lh_gold_{dominio}     → lh_gold_analytics
+nb_{capa}_{acción}    → nb_silver_transform_ventas
+df_{fuente}_{acción}  → df_erp_ingest_ventas
+```
+
+### 2. Observabilidad desde el primer día
+
+```python
+import json
+from datetime import datetime
+
+def log_step(layer: str, table: str, records: int,
+             status: str, error: str = None) -> None:
+    """Log estructurado para el pipeline de Medallion."""
+    entry = {
+        "timestamp": datetime.utcnow().isoformat(),
+        "layer":     layer,
+        "table":     table,
+        "records":   records,
+        "status":    status,   # "success" | "warning" | "error"
+        "error":     error
+    }
+    # En producción: enviar a tabla de audit en Fabric o Log Analytics
+    print(json.dumps(entry))
+
+# Uso
+log_step("silver", "fact_ventas", 150_000, "success")
+log_step("silver", "ventas_rechazadas", 42, "warning",
+         "42 registros con fecha inválida")
+```
+
+### 3. Validaciones de calidad antes de escribir en cada capa
+
+```python
+def validate_silver(df) -> None:
+    """Validaciones críticas de Silver — lanza excepción si falla."""
+    
+    total = df.count()
+    checks = [
+        ("sin_venta_id_nulo",  df.filter(col("venta_id").isNull()).count() == 0),
+        ("sin_importes_neg",   df.filter(col("importe_neto") < 0).count() == 0),
+        ("canal_valido",       df.filter(
+            ~col("canal").isin(["ONLINE", "TIENDA", "B2B", "TELEFONO"])
+        ).count() == 0),
+    ]
+    
+    failed = [name for name, ok in checks if not ok]
+    if failed:
+        raise ValueError(f"Validaciones fallidas en Silver: {failed}")
+    
+    print(f"Todas las validaciones OK ({total:,} registros)")
+```
+
+### 4. ¿Cuándo usar dos capas en vez de tres?
+
+Para proyectos pequeños o equipos de análisis sin ingeniería de datos, dos capas pueden ser suficientes:
+- **Raw → Analytic**: Raw = Bronze directo, Analytic = Silver+Gold combinados
+- Útil cuando el volumen es bajo y el modelo de datos es estable
+- Menos overhead de mantenimiento
+
+Nikola Ilic habla de esto en detalle: la complejidad de Medallion debe justificarse por el volumen y la complejidad del dato.
+
+## Lo que dicen los expertos
+
+**Nikola Ilic** ([data-mozart.com](https://data-mozart.com)) es quizás la referencia más citada en Medallion + Fabric. Su serie sobre Medallion Architecture en Microsoft Fabric es imprescindible, especialmente su análisis sobre cuándo dos capas son suficientes y cuándo tres son necesarias.
+
+**Reza Rad** ([RADACAD](https://radacad.com)) lleva años documentando patrones de Lakehouse. Su enfoque sobre cómo gestionar el ciclo de vida de los datos (retención por capa, particionado, Z-ordering en Delta) es especialmente valioso.
+
+**Chris Webb** ([blog.crossjoin.co.uk](https://blog.crossjoin.co.uk)) aporta la perspectiva de cómo Medallion impacta en el rendimiento de DirectLake en Power BI: la estructura de las tablas Gold determina directamente la velocidad de los reports.
+
+**Marc Lelijveld** ([marclelijveld.com](https://marclelijveld.com)) tiene contenido excelente sobre Fabric Deployment Pipelines para gestionar Medallion en entornos dev/test/prod con CI/CD.
+
+## Recursos de Microsoft
+
+- [Arquitectura Medallion en Microsoft Fabric](https://learn.microsoft.com/es-es/fabric/onelake/onelake-medallion-lakehouse-architecture)
+- [Delta Lake en Microsoft Fabric](https://learn.microsoft.com/es-es/fabric/data-engineering/lakehouse-and-delta-tables)
+- [Tutorial end-to-end: Medallion Lakehouse](https://learn.microsoft.com/es-es/fabric/data-engineering/tutorial-lakehouse-introduction)
+- [Lakehouse Best Practices](https://learn.microsoft.com/es-es/fabric/data-engineering/lakehouse-best-practices)
+
+## Conclusión
+
+La arquitectura Medallion no es complejidad por el gusto de la complejidad. Es una solución pragmática a un problema real: los datos de negocio son sucios, incompletos y cambian constantemente. Con Bronze, Silver y Gold defines zonas claras de responsabilidad, permites el reprocesamiento sin pérdida de datos y generas confianza en los consumidores del dato.
+
+En Microsoft Fabric, donde Spark, SQL y Power BI viven en el mismo ecosistema, Medallion se implementa de forma natural con los Lakehouses. El código de este artículo es el punto de partida; la clave es adaptarlo al volumen, los equipos y el dominio de tu organización.

@@ -1,0 +1,249 @@
+---
+title: "OneLake Catalog en Microsoft Fabric: Configuración de Governance desde cero"
+description: "Guía paso a paso para configurar el catálogo de datos OneLake en Microsoft Fabric. Define certificaciones, etiquetas de sensibilidad, linaje y mejores prácticas de gobernanza para tu organización."
+pubDate: "2026-07-28"
+heroImage: '../../assets/blog-placeholder-3.jpg'
+---
+
+El mayor problema en organizaciones con datos no es la falta de información: es **no saber qué datos existen**, quién los creó, si son fiables o si están actualizados. El **OneLake Catalog** de Microsoft Fabric es la solución nativa para este problema.
+
+En este artículo te cuento cómo configurarlo desde cero con criterio real.
+
+## ¿Qué es OneLake y el OneLake Catalog?
+
+**OneLake** es el almacenamiento unificado de Microsoft Fabric: un único data lake lógico que aloja todos los datos de la organización, independientemente de la herramienta que los creó (Lakehouse, Warehouse, Eventstream, etc.).
+
+El **OneLake Catalog** es la capa de **gobernanza y descubrimiento** que permite a los equipos:
+
+- Descubrir qué datos existen en toda la organización
+- Entender la calidad y fiabilidad de cada dataset
+- Ver el linaje de transformación (de dónde viene cada dato)
+- Aplicar políticas de seguridad y clasificación
+- Certificar datasets como fuentes de verdad
+
+> "Data governance is not about control. It's about trust." — Microsoft Fabric Adoption Framework
+
+## Conceptos clave antes de configurar
+
+Antes de tocar cualquier configuración, necesitas entender los tres mecanismos de **endorsement** de Fabric:
+
+| Nivel | Quién lo asigna | Qué significa |
+|---|---|---|
+| **Promoted** | Propietario del workspace | "Este dataset funciona y lo mantengo yo" |
+| **Certified** | Admin del tenant o de capacidad | "Este dato cumple estándares organizacionales" |
+| **Master data** | Admin del tenant | "Esta es la fuente definitiva de verdad" |
+
+## Paso 1: Habilitar Purview en Fabric
+
+El OneLake Catalog se integra con Microsoft Purview. Actívalo desde el **Portal de Administración de Fabric → Configuración del tenant → Microsoft Purview Hub**.
+
+```powershell
+# Verificar estado de Purview en el tenant via API de administración
+$headers = @{ Authorization = "Bearer $accessToken" }
+
+$response = Invoke-RestMethod `
+    -Uri "https://api.fabric.microsoft.com/v1/admin/tenantsettings" `
+    -Headers $headers `
+    -Method GET
+
+$purviewSetting = $response.tenantsettings | 
+    Where-Object { $_.settingName -eq "UsePurviewHubSetting" }
+
+Write-Output "Estado Purview en Fabric: $($purviewSetting.enabled)"
+# Si es $false, habilítalo desde el Portal de Admin
+```
+
+## Paso 2: Configurar etiquetas de sensibilidad
+
+Las etiquetas de sensibilidad (Microsoft Information Protection) clasifican la confidencialidad de cada ítem de Fabric. Se aplican automáticamente a Lakehouses, Warehouses, modelos semánticos y pipelines.
+
+Taxonomía recomendada para equipos de datos:
+
+```
+Público
+└── Datos compartibles externamente sin restricción
+
+Uso interno
+└── Datos para empleados, sin información personal identificable
+
+Confidencial
+├── Datos personales (GDPR / LOPD)
+└── Datos financieros sensibles
+
+Altamente confidencial
+├── Datos de dirección / consejo
+└── Datos regulatorios (PCI-DSS, HIPAA)
+```
+
+Aplicar una etiqueta de sensibilidad vía API REST de Fabric:
+
+```python
+import requests
+
+FABRIC_API_BASE = "https://api.fabric.microsoft.com/v1"
+WORKSPACE_ID    = "tu-workspace-id"
+LAKEHOUSE_ID    = "tu-lakehouse-id"
+LABEL_ID        = "id-etiqueta-mip-de-purview"
+
+headers = {
+    "Authorization": f"Bearer {access_token}",
+    "Content-Type": "application/json"
+}
+
+payload = {
+    "sensitivityLabel": {
+        "labelId": LABEL_ID,
+        "assignmentMethod": "Privileged"
+    }
+}
+
+response = requests.patch(
+    f"{FABRIC_API_BASE}/workspaces/{WORKSPACE_ID}/lakehouses/{LAKEHOUSE_ID}",
+    headers=headers,
+    json=payload
+)
+
+print("OK" if response.status_code == 200 else f"Error: {response.text}")
+```
+
+## Paso 3: Endorsement de datasets — el corazón de la governance
+
+El proceso de certificación define qué datos son fuentes de confianza. Un script de auditoría para identificar ítems sin endorsement:
+
+```python
+import requests
+import pandas as pd
+
+def get_unendorsed_items(workspace_id: str, access_token: str) -> pd.DataFrame:
+    """Retorna todos los ítems del workspace sin endorsement."""
+    
+    headers = {"Authorization": f"Bearer {access_token}"}
+    
+    response = requests.get(
+        f"https://api.fabric.microsoft.com/v1/workspaces/{workspace_id}/items",
+        headers=headers
+    )
+    items = response.json().get("value", [])
+    
+    unendorsed = [
+        {
+            "nombre":      item["displayName"],
+            "tipo":        item["type"],
+            "creado_por":  item.get("createdBy", {}).get("displayName", "—"),
+            "modificado":  item.get("lastModifiedDateTime", "—"),
+            "endorsement": item.get("endorsementDetail", {}).get("endorsement", "None")
+        }
+        for item in items
+        if item.get("endorsementDetail", {}).get("endorsement", "None") == "None"
+    ]
+    
+    return pd.DataFrame(unendorsed)
+
+df = get_unendorsed_items("tu-workspace-id", access_token)
+print(f"{len(df)} ítems sin endorsement:")
+print(df.to_string(index=False))
+```
+
+## Paso 4: Nomenclatura para un linaje de datos limpio
+
+El linaje en Fabric se visualiza automáticamente en el **Data Lineage View** del workspace. Para que sea legible necesitas una nomenclatura consistente:
+
+```
+Workspace: prod-ventas-analytics
+├── lh_bronze_ventas          ← ingesta raw del ERP
+├── lh_silver_ventas          ← datos limpios y validados
+├── lh_gold_analytics         ← modelo dimensional Gold
+├── df_ingest_erp_ventas      ← pipeline de ingesta (Data Factory)
+├── nb_transform_silver       ← notebook de transformación Spark
+├── dw_presentation_ventas    ← Data Warehouse para Power BI
+└── sm_ventas_kpi             ← modelo semántico (semantic model)
+```
+
+Actualizar descripciones vía API para enriquecer el catálogo:
+
+```python
+def update_item_description(workspace_id: str, item_id: str,
+                             item_type: str, description: str,
+                             access_token: str) -> bool:
+    """Actualiza la descripción de un ítem en el catálogo."""
+    
+    endpoints = {
+        "Lakehouse":  "lakehouses",
+        "Warehouse":  "warehouses",
+        "Notebook":   "notebooks",
+        "Dataflow":   "dataflows"
+    }
+    
+    endpoint = endpoints.get(item_type)
+    if not endpoint:
+        raise ValueError(f"Tipo no soportado: {item_type}")
+    
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "application/json"
+    }
+    
+    response = requests.patch(
+        f"https://api.fabric.microsoft.com/v1/workspaces/{workspace_id}/{endpoint}/{item_id}",
+        headers=headers,
+        json={"description": description}
+    )
+    
+    return response.status_code == 200
+
+# Ejemplo
+update_item_description(
+    workspace_id=WORKSPACE_ID,
+    item_id=LAKEHOUSE_ID,
+    item_type="Lakehouse",
+    description=(
+        "Capa Bronze de ventas. Datos raw del ERP SAP S/4HANA, "
+        "actualizados cada 4h. No usar directamente en reportes. "
+        "Propietario: Equipo Data Engineering. "
+        "SLA de frescura: máximo 5h de lag."
+    ),
+    access_token=access_token
+)
+```
+
+## Paso 5: Row-Level Security en el modelo semántico
+
+El último pilar de governance es controlar quién ve qué datos. RLS en el modelo semántico de Power BI / Fabric:
+
+```dax
+-- Filtro de seguridad en DAX: cada usuario solo ve su región
+-- Crear en: Modelo semántico → Seguridad → Administrar roles
+
+[Filtro de Región]
+
+VAR UsuarioActual = USERPRINCIPALNAME()
+VAR RegionesPermitidas =
+    CALCULATETABLE(
+        VALUES(DimUsuariosRegiones[Region]),
+        DimUsuariosRegiones[Email] = UsuarioActual
+    )
+RETURN
+    [Region] IN RegionesPermitidas
+```
+
+## Lo que dicen los expertos sobre governance en Fabric
+
+[Reza Rad (RADACAD)](https://radacad.com) tiene una de las guías más completas sobre governance en Fabric, incluyendo cómo estructurar workspaces por dominio y capacidad. Su enfoque pragmático es especialmente útil para organizaciones que empiezan desde cero.
+
+El equipo de [Guy in a Cube](https://guyinacube.com) (Adam Saxton y Patrick LeBlanc) tiene contenido excelente sobre cómo implementar governance sin ralentizar la velocidad del equipo de datos.
+
+[Marc Lelijveld](https://marclelijveld.com) tiene artículos muy técnicos sobre Deployment Pipelines y cómo gestionar el ciclo de vida de los ítems de Fabric, que complementan perfectamente la governance del catálogo.
+
+## Recursos de Microsoft
+
+- [Governance en Microsoft Fabric](https://learn.microsoft.com/es-es/fabric/governance/governance-compliance-overview)
+- [OneLake Catalog Overview](https://learn.microsoft.com/es-es/fabric/governance/onelake-catalog-overview)
+- [Sensitivity Labels en Fabric](https://learn.microsoft.com/es-es/fabric/governance/information-protection-overview)
+- [Fabric REST API — Items](https://learn.microsoft.com/es-es/rest/api/fabric/core/items)
+- [Row-Level Security en Power BI](https://learn.microsoft.com/es-es/power-bi/enterprise/service-admin-rls)
+
+## Conclusión
+
+La governance en Microsoft Fabric no es opcional en entornos de producción. El OneLake Catalog, combinado con Microsoft Purview, te da las herramientas para construir una capa de **confianza** sobre tus datos: quién los creó, qué significan, si son fiables y quién puede verlos.
+
+Empieza por los primeros tres pasos (habilitar Purview, etiquetar sensibilidad, certificar datasets clave) y construye desde ahí. La governance perfecta no existe, pero la governance progresiva sí.

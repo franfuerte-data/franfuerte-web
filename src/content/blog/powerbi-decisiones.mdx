@@ -1,24 +1,123 @@
 ---
 title: "Power BI Ejecutivo: Cómo convertir métricas en decisiones"
-description: "Estrategias para diseñar dashboards que los directivos realmente usen y entiendan."
+description: "Estrategias para diseñar dashboards que los directivos realmente usen. Principios de diseño orientado a decisión, errores comunes y ejemplos de DAX para ejecutivos."
 pubDate: "2026-08-06"
 heroImage: '../../assets/blog-placeholder-1.jpg'
 ---
 
-A lo largo de mi carrera pasando de lo operativo a la dirección, he visto decenas de dashboards técnicamente perfectos que nadie usa. La herramienta (ya sea Power BI, Fabric o Tableau) es secundaria si no entendemos el problema de negocio.
+A lo largo de mi carrera pasando de lo operativo a la dirección, he visto decenas de dashboards técnicamente perfectos que nadie usa. La herramienta (ya sea Power BI, Fabric o Tableau) es secundaria si no entendemos el problema de negocio que hay detrás.
 
 ## Por qué la mayoría de los dashboards fracasan
 
-Aquí explicaremos los errores más comunes al intentar mostrar demasiada información sin un propósito claro.
+El error más común no es técnico: es de diseño de propósito. Un dashboard que intenta responder demasiadas preguntas acaba respondiendo ninguna bien.
+
+Los tres errores más frecuentes que veo en organizaciones:
+
+1. **Mostrar métricas sin contexto**: Un 73% de satisfacción no significa nada sin saber si el mes pasado era 68% o 80%. El número sin referencia no orienta ninguna decisión.
+
+2. **Confundir actividad con impacto**: Muchos reports muestran cuánto se hace (ventas cerradas, tickets resueltos) pero no si eso avanza los objetivos de negocio reales.
+
+3. **Diseñar para quien construye, no para quien decide**: El analista quiere mostrar todo lo que sabe. El directivo necesita responder una pregunta en menos de 30 segundos.
 
 ## Diseñando para la acción, no para la vista
 
-Un buen reporte no debe invitar a la contemplación, debe invitar a tomar una decisión. 
+Un buen reporte no invita a la contemplación, invita a tomar una decisión. Esto cambia todo el enfoque de diseño.
 
-*   **Regla 1:** Menos es más.
-*   **Regla 2:** Contexto sobre el dato aislado.
-*   **Regla 3:** El usuario final manda.
+**Regla 1: Menos es más.** Si un directivo necesita hacer scroll para encontrar el dato que le importa, el dashboard ha fallado. Un máximo de 5-7 KPIs por pantalla es suficiente. El resto, en páginas de detalle para quien quiera profundizar.
+
+**Regla 2: Contexto sobre el dato aislado.** Siempre muestra comparativas: vs. objetivo, vs. mes anterior, vs. año anterior. En DAX esto se implementa fácilmente:
+
+```dax
+-- KPI con comparativa vs. mes anterior
+Ventas MoM % =
+VAR VentasActual   = [Total Ventas]
+VAR VentasAnterior =
+    CALCULATE([Total Ventas], DATEADD(Calendario[Fecha], -1, MONTH))
+RETURN
+IF(
+    ISBLANK(VentasAnterior),
+    BLANK(),
+    DIVIDE(VentasActual - VentasAnterior, VentasAnterior)
+)
+
+-- Indicador semáforo para uso en tarjetas
+Color Semáforo Ventas =
+VAR Variacion = [Ventas MoM %]
+RETURN
+SWITCH(
+    TRUE(),
+    Variacion >= 0.05,   "#22c55e",   -- verde: >+5%
+    Variacion >= -0.02,  "#f59e0b",   -- ámbar: entre -2% y +5%
+    "#ef4444"                          -- rojo: <-2%
+)
+```
+
+**Regla 3: El usuario final manda.** Antes de diseñar cualquier report, pregunta a quien lo va a usar: "¿Qué decisión tomarías con este dato?". Si no tiene respuesta clara, el dato no pertenece al dashboard ejecutivo.
+
+## La estructura que funciona: el modelo de tres capas de reporte
+
+En la práctica, recomiendo estructurar los informes ejecutivos en tres niveles:
+
+```
+Nivel 1 — Vista ejecutiva (1 página)
+├── 5-6 KPIs principales con semáforo y variación MoM/YoY
+├── Un gráfico de tendencia del KPI más crítico
+└── Alerta proactiva si hay algo que requiere atención inmediata
+
+Nivel 2 — Análisis por dimensión (2-3 páginas)
+├── Desglose por región, producto, canal, equipo
+├── Ranking de los top performers y bottom performers
+└── Drill-through disponible para el nivel 3
+
+Nivel 3 — Datos de soporte (a demanda)
+├── Tablas detalladas con filtros
+├── Datos de transacciones para auditoría
+└── Explicaciones de metodología y definiciones
+```
+
+La dirección trabaja en el Nivel 1. Los mandos intermedios en el Nivel 2. El equipo analítico tiene acceso al Nivel 3.
+
+## Un ejemplo real: el report que nadie quería usar
+
+En un proyecto anterior, teníamos un report de ventas con 14 páginas, 80+ métricas y actualización diaria. Nadie de dirección lo abría.
+
+Rediseñamos con tres principios:
+- Una sola página ejecutiva con 6 KPIs y un gráfico de tendencia
+- Cada KPI con objetivo, valor actual y variación vs. mes anterior
+- Color semáforo automático para que en 10 segundos sepas dónde hay problemas
+
+```dax
+-- Medida de objetivo dinámico desde tabla de targets
+Objetivo Ventas =
+CALCULATE(
+    SUM(Targets[Objetivo]),
+    FILTER(
+        Targets,
+        Targets[Año]  = YEAR(TODAY()) &&
+        Targets[Mes]  = MONTH(TODAY()) &&
+        Targets[KPI]  = "Ventas Netas"
+    )
+)
+
+-- % de cumplimiento vs. objetivo
+% Cumplimiento Objetivo =
+DIVIDE([Total Ventas], [Objetivo Ventas])
+```
+
+El resultado: la dirección empezó a revisar el report cada lunes sin que nadie se lo pidiera. El dato correcto, en el formato correcto, para la persona correcta.
+
+## Recursos para seguir aprendiendo
+
+Estas son mis referencias habituales en diseño de reports ejecutivos con Power BI:
+
+- [Guy in a Cube](https://guyinacube.com) (Adam Saxton y Patrick LeBlanc) — los mejores tutoriales prácticos de Power BI
+- [RADACAD — Reza Rad](https://radacad.com) — arquitectura de soluciones Power BI end-to-end
+- [Nikola Ilic — data-mozart.com](https://data-mozart.com) — DAX avanzado y rendimiento de modelos semánticos
+- [Microsoft Learn: Power BI](https://learn.microsoft.com/es-es/power-bi/) — documentación oficial con ejemplos prácticos
+- [SQLBI — Marco Russo y Alberto Ferrari](https://www.sqlbi.com) — la referencia definitiva en DAX
 
 ## Conclusión
 
-El verdadero valor de un analista no está en saber DAX complejo, sino en saber traducir el negocio a datos y los datos a decisiones.
+El verdadero valor de un analista no está en saber DAX complejo, sino en saber traducir el negocio a datos y los datos a decisiones. Un dashboard que el directivo consulta sin que nadie se lo pida ha alcanzado su objetivo. Uno que se convierte en presentación mensual y acaba en un correo de PDF ha fallado.
+
+Diseña para que la decisión sea obvia, no para que el trabajo sea visible.

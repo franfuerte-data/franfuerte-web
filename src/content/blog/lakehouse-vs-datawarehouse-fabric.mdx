@@ -1,0 +1,174 @@
+---
+title: "Lakehouse vs Data Warehouse en Microsoft Fabric 2026: ¿Cuál elegir?"
+description: "Comparativa técnica entre Lakehouse y Data Warehouse en Microsoft Fabric. Arquitecturas, rendimiento, casos de uso y código real para tomar la decisión correcta en 2026."
+pubDate: "2026-08-05"
+heroImage: '../../assets/blog-placeholder-2.jpg'
+---
+
+En Microsoft Fabric coexisten dos paradigmas de almacenamiento que frecuentemente generan dudas: el **Lakehouse** y el **Data Warehouse**. Aunque ambos viven en el mismo ecosistema y comparten OneLake como capa de almacenamiento, tienen propósitos, comportamientos y herramientas bien diferenciados.
+
+Este artículo te da el mapa completo para decidir cuál usar y cuándo combinarlos.
+
+## El contexto: por qué importa esta decisión en 2026
+
+Microsoft Fabric unificó en 2023 lo que antes eran servicios separados: Azure Synapse Analytics, Power BI, Data Factory y Azure Data Lake Storage Gen2. Todo converge en un único SaaS con un solo almacenamiento subyacente: **OneLake**.
+
+Esto significa que la elección entre Lakehouse y DW ya no es una decisión de infraestructura (ambos usan el mismo Parquet/Delta en OneLake), sino una decisión de **herramienta y flujo de trabajo**.
+
+## ¿Qué es el Data Warehouse en Microsoft Fabric?
+
+El Data Warehouse de Fabric es un motor **T-SQL completo**, serverless, optimizado para consultas analíticas. Soporta:
+
+- Transacciones ACID completas
+- DDL completo: `CREATE TABLE`, `ALTER TABLE`, `DROP TABLE`, particionado
+- Columnar storage automático optimizado para queries de BI
+- Integración directa con Power BI (endpoint SQL nativo y DirectLake)
+- Roles de seguridad a nivel de tabla, columna y fila (RLS/CLS)
+
+El DW está diseñado para **analistas y equipos BI** que trabajan con SQL puro, sin necesidad de conocer Spark ni Python.
+
+```sql
+-- Crear una tabla de hechos en el Data Warehouse de Fabric
+CREATE TABLE [dbo].[FactVentas] (
+    VentaID        INT            NOT NULL,
+    FechaID        INT            NOT NULL,
+    ProductoID     INT            NOT NULL,
+    ClienteID      INT            NOT NULL,
+    Cantidad       INT            NOT NULL,
+    ImporteNeto    DECIMAL(18, 2) NOT NULL,
+    ImporteIVA     DECIMAL(18, 2) NOT NULL,
+    Canal          NVARCHAR(50)   NOT NULL
+)
+WITH (
+    DISTRIBUTION = HASH(ClienteID),
+    CLUSTERED COLUMNSTORE INDEX
+);
+
+-- Cargar desde staging con validaciones
+INSERT INTO [dbo].[FactVentas]
+SELECT
+    v.VentaID,
+    CONVERT(INT, FORMAT(v.FechaVenta, 'yyyyMMdd'))  AS FechaID,
+    v.ProductoID,
+    v.ClienteID,
+    v.Cantidad,
+    v.ImporteNeto,
+    v.ImporteNeto * 0.21                             AS ImporteIVA,
+    v.Canal
+FROM [staging].[VentasBruto] v
+WHERE v.Estado = 'Validado'
+  AND v.ImporteNeto > 0;
+```
+
+## ¿Qué es el Lakehouse en Microsoft Fabric?
+
+El Lakehouse de Fabric combina la flexibilidad de un data lake con capacidades analíticas SQL. Internamente, todos los datos se guardan en formato **Delta Lake** (tablas Delta) sobre OneLake.
+
+Características clave:
+- Soporte nativo para **Python, PySpark y Spark SQL**
+- Ingesta de múltiples formatos: CSV, JSON, Parquet, Avro, ORC
+- Tablas Delta con soporte para actualizaciones, deletes y time travel
+- Notebooks de Fabric integrados
+- **SQL Analytics Endpoint**: acceso SQL de solo lectura automático sobre las tablas Delta
+
+```python
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import col, to_date, current_timestamp, lit
+
+spark = SparkSession.builder.getOrCreate()
+
+# Leer datos raw desde la zona de aterrizaje
+df_raw = spark.read.format("csv") \
+    .option("header", "true") \
+    .option("inferSchema", "true") \
+    .load("Files/bronze/ventas_raw/2026/")
+
+# Transformaciones y limpieza
+df_silver = df_raw \
+    .withColumn("FechaVenta", to_date(col("fecha_raw"), "dd/MM/yyyy")) \
+    .withColumn("ImporteNeto", col("importe").cast("decimal(18,2)")) \
+    .withColumn("_ingestion_ts", current_timestamp()) \
+    .filter(col("estado") == "Activo") \
+    .dropDuplicates(["venta_id"])
+
+# Guardar como tabla Delta en Silver
+df_silver.write \
+    .format("delta") \
+    .mode("overwrite") \
+    .option("overwriteSchema", "true") \
+    .saveAsTable("silver.fact_ventas")
+
+print(f"Registros procesados: {df_silver.count():,}")
+```
+
+## Comparativa directa
+
+| Característica | Lakehouse | Data Warehouse |
+|---|---|---|
+| **Lenguaje principal** | PySpark, Python, Spark SQL | T-SQL |
+| **Formato de datos** | Delta Lake (Parquet) | Columnar optimizado Fabric |
+| **Formatos de ingesta** | CSV, JSON, Parquet, Avro, ORC | CSV, Parquet (vía COPY INTO) |
+| **Actualizaciones/Deletes** | Sí (Delta ACID) | Sí (T-SQL nativo) |
+| **Integración Power BI** | Vía SQL Endpoint | Directa, DirectLake nativo |
+| **Usuarios objetivo** | Ingenieros de datos, Data Scientists | Analistas SQL, equipos BI |
+| **Rendimiento BI** | Alto | Muy alto (optimizado) |
+| **Curva de aprendizaje** | Media-alta (Spark) | Baja (SQL estándar) |
+| **Time Travel** | Sí (Delta) | No |
+| **Streaming** | Sí (Spark Streaming) | Limitado |
+
+## ¿Cuándo usar cada uno?
+
+### Elige el **Lakehouse** si:
+- Trabajas con datos no estructurados o semiestructurados (JSON, logs, APIs)
+- Tu equipo domina Python o PySpark
+- Necesitas procesar grandes volúmenes con transformaciones complejas
+- Implementas una arquitectura Medallion (Bronze → Silver → Gold)
+- Necesitas ML o análisis predictivo con los mismos datos
+
+### Elige el **Data Warehouse** si:
+- Tu equipo es principalmente SQL/BI
+- Necesitas que Power BI consuma los datos con DirectLake de alto rendimiento
+- El modelo de datos ya está definido (estrella, copo de nieve)
+- Priorizas consistencia transaccional y operativa sencilla
+- Los datos de entrada ya están limpios y estructurados
+
+### El patrón más común: combínalos
+
+En la mayoría de arquitecturas de producción, **Lakehouse para ETL + DW para consumo BI** es el patrón ganador. El Lakehouse procesa y limpia los datos, y el DW expone el modelo a Power BI con el máximo rendimiento.
+
+```sql
+-- En el DW: crear una vista sobre las tablas Delta del Lakehouse
+-- Fabric permite queries cross-item sin necesidad de copiar datos
+CREATE VIEW [dbo].[vw_VentasMensuales]
+AS
+SELECT
+    FORMAT(FechaVenta, 'yyyy-MM')   AS Mes,
+    Canal,
+    SUM(Cantidad)                   AS UnidadesVendidas,
+    SUM(ImporteNeto)                AS IngresoNeto,
+    COUNT(DISTINCT VentaID)         AS NumTransacciones
+FROM [silver_lakehouse].[dbo].[fact_ventas]
+GROUP BY
+    FORMAT(FechaVenta, 'yyyy-MM'),
+    Canal;
+```
+
+## Lo que dicen los expertos
+
+[Reza Rad (RADACAD)](https://radacad.com) lleva años documentando la evolución de Fabric y argumenta que el Lakehouse es el corazón de las arquitecturas modernas, mientras que el DW es la capa de presentación optimizada para BI.
+
+[Nikola Ilic](https://data-mozart.com) (MVP de Microsoft) recomienda empezar por el Lakehouse para ingeniería de datos y solo pasar al DW cuando el modelo está estable y el equipo BI lo necesita para rendimiento óptimo.
+
+[Chris Webb](https://blog.crossjoin.co.uk) señala que DirectLake sobre Lakehouse está madurando rápidamente y para muchos escenarios puede sustituir al DW con menor complejidad operativa.
+
+## Recursos oficiales de Microsoft
+
+- [Microsoft Learn: Fabric Data Warehouse](https://learn.microsoft.com/es-es/fabric/data-warehouse/data-warehousing)
+- [Microsoft Learn: Lakehouse en Fabric](https://learn.microsoft.com/es-es/fabric/data-engineering/lakehouse-overview)
+- [Comparativa DW vs Lakehouse en Fabric](https://learn.microsoft.com/es-es/fabric/data-engineering/lakehouse-and-warehouse)
+
+## Conclusión
+
+La elección entre Lakehouse y Data Warehouse en Microsoft Fabric no es un debate de tecnología, es un debate de **equipos y flujos de trabajo**. Si tu equipo vive en SQL y Power BI, el DW te da menos fricción. Si tus ingenieros trabajan en Python y Spark, el Lakehouse es su terreno natural.
+
+En la práctica, la arquitectura ganadora combina ambos: Lakehouse para la ingeniería, DW para la presentación. Microsoft Fabric está diseñado exactamente para facilitar esa integración sin fricciones ni movimiento de datos.

@@ -5,79 +5,162 @@ import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
+import NewsletterBanner from '../components/NewsletterBanner.astro';
 
 type Props = CollectionEntry<'blog'>['data'];
 
 const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 ---
 
-<html lang="en">
+<html lang="es">
 	<head>
-		<BaseHead title={title} description={description} />
+		<BaseHead title={title} description={description} image={heroImage} article={true} />
 		<style>
-			main {
-				width: calc(100% - 2em);
-				max-width: 100%;
-				margin: 0;
-			}
-			.hero-image {
-				width: 100%;
-			}
-			.hero-image img {
-				display: block;
-				margin: 0 auto;
-				border-radius: 12px;
-				box-shadow: var(--box-shadow);
-			}
 			.prose {
-				width: 720px;
-				max-width: calc(100% - 2em);
-				margin: auto;
-				padding: 1em;
-				color: rgb(var(--gray-dark));
+				color: rgb(203 213 225);
 			}
-			.title {
-				margin-bottom: 1em;
-				padding: 1em 0;
-				text-align: center;
-				line-height: 1;
+			.prose h2 {
+				color: #fff;
+				font-size: 1.5rem;
+				font-weight: 800;
+				margin-top: 2.5rem;
+				margin-bottom: 1rem;
+				letter-spacing: -0.025em;
 			}
-			.title h1 {
-				margin: 0 0 0.5em 0;
+			.prose h3 {
+				color: #e2e8f0;
+				font-size: 1.2rem;
+				font-weight: 700;
+				margin-top: 2rem;
+				margin-bottom: 0.75rem;
 			}
-			.date {
-				margin-bottom: 0.5em;
-				color: rgb(var(--gray));
+			.prose p {
+				margin-bottom: 1.25rem;
+				line-height: 1.8;
 			}
-			.last-updated-on {
+			.prose a {
+				color: #a78bfa;
+				text-decoration: underline;
+				text-underline-offset: 3px;
+				transition: color 0.15s;
+			}
+			.prose a:hover {
+				color: #c4b5fd;
+			}
+			.prose strong {
+				color: #e2e8f0;
+				font-weight: 700;
+			}
+			.prose blockquote {
+				border-left: 3px solid #7c3aed;
+				padding-left: 1.25rem;
+				margin: 1.5rem 0;
+				color: #94a3b8;
 				font-style: italic;
+			}
+			.prose ul {
+				list-style: disc;
+				padding-left: 1.5rem;
+				margin-bottom: 1.25rem;
+				space-y: 0.5rem;
+			}
+			.prose ol {
+				list-style: decimal;
+				padding-left: 1.5rem;
+				margin-bottom: 1.25rem;
+			}
+			.prose li {
+				margin-bottom: 0.4rem;
+				line-height: 1.7;
+			}
+			.prose pre {
+				background: rgba(0, 0, 0, 0.5);
+				border: 1px solid rgba(255, 255, 255, 0.08);
+				border-radius: 0.75rem;
+				padding: 1.25rem;
+				overflow-x: auto;
+				margin: 1.5rem 0;
+				font-size: 0.875rem;
+				line-height: 1.6;
+			}
+			.prose code:not(pre code) {
+				background: rgba(124, 58, 237, 0.15);
+				border: 1px solid rgba(124, 58, 237, 0.25);
+				border-radius: 0.3rem;
+				padding: 0.15em 0.4em;
+				font-size: 0.875em;
+				color: #c4b5fd;
+			}
+			.prose table {
+				width: 100%;
+				border-collapse: collapse;
+				margin: 1.5rem 0;
+				font-size: 0.9rem;
+			}
+			.prose th {
+				background: rgba(124, 58, 237, 0.15);
+				border: 1px solid rgba(255, 255, 255, 0.1);
+				padding: 0.6rem 1rem;
+				text-align: left;
+				color: #e2e8f0;
+				font-weight: 700;
+			}
+			.prose td {
+				border: 1px solid rgba(255, 255, 255, 0.08);
+				padding: 0.6rem 1rem;
+				color: #cbd5e1;
+			}
+			.prose tr:nth-child(even) td {
+				background: rgba(255, 255, 255, 0.02);
+			}
+			.prose hr {
+				border-color: rgba(255, 255, 255, 0.1);
+				margin: 2rem 0;
 			}
 		</style>
 	</head>
 
-	<body>
+	<body class="bg-[#060816] text-slate-300" style="font-family: var(--font-atkinson, Arial, sans-serif)">
 		<Header />
-		<main>
+		<main class="mx-auto max-w-3xl px-6 py-12 sm:px-8">
 			<article>
-				<div class="hero-image">
-					{heroImage && <Image width={1020} height={510} src={heroImage} alt="" />}
-				</div>
-				<div class="prose">
-					<div class="title">
-						<div class="date">
-							<FormattedDate date={pubDate} />
-							{
-								updatedDate && (
-									<div class="last-updated-on">
-										Last updated on <FormattedDate date={updatedDate} />
-									</div>
-								)
-							}
-						</div>
-						<h1>{title}</h1>
-						<hr />
+				{heroImage && (
+					<div class="mb-8 overflow-hidden rounded-2xl border border-white/10">
+						<Image
+							width={1020}
+							height={510}
+							src={heroImage}
+							alt={title}
+							class="w-full object-cover"
+						/>
 					</div>
+				)}
+
+				<header class="mb-8">
+					<div class="mb-3 flex items-center gap-3 text-sm text-slate-500">
+						<FormattedDate date={pubDate} />
+						{updatedDate && (
+							<>
+								<span>·</span>
+								<span>Actualizado: <FormattedDate date={updatedDate} /></span>
+							</>
+						)}
+					</div>
+					<h1 class="text-3xl font-black leading-tight tracking-tight text-white sm:text-4xl">
+						{title}
+					</h1>
+					{description && (
+						<p class="mt-4 text-lg leading-7 text-slate-400">{description}</p>
+					)}
+					<hr class="mt-6 border-white/10" />
+				</header>
+
+				<div class="prose">
 					<slot />
+				</div>
+
+				<div class="mt-16">
+					<NewsletterBanner />
 				</div>
 			</article>
 		</main>
