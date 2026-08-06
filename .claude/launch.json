@@ -3,8 +3,8 @@
   "configurations": [
     {
       "name": "franfuerte-web",
-      "runtimeExecutable": "C:\\Program Files\\nodejs\\npm.cmd",
-      "runtimeArgs": ["run", "dev"],
+      "runtimeExecutable": "C:\\Program Files\\nodejs\\node.exe",
+      "runtimeArgs": ["node_modules\\.bin\\astro", "dev", "--port", "4321"],
       "port": 4321
     }
   ]
