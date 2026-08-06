@@ -1,0 +1,61 @@
+<svg viewBox="0 0 1020 510" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f0a1e"/>
+      <stop offset="100%" stop-color="#060816"/>
+    </linearGradient>
+    <linearGradient id="barA" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#a78bfa"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </linearGradient>
+    <linearGradient id="barB" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#c4b5fd"/>
+      <stop offset="100%" stop-color="#8b5cf6"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="rgba(124,58,237,0.25)"/>
+      <stop offset="100%" stop-color="rgba(6,8,22,0)"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1020" height="510" fill="url(#bg)"/>
+  <ellipse cx="200" cy="150" rx="280" ry="200" fill="rgba(124,58,237,0.12)"/>
+  <ellipse cx="800" cy="400" rx="200" ry="150" fill="rgba(79,70,229,0.10)"/>
+
+  <rect x="40" y="50" width="580" height="410" rx="18" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+
+  <line x1="80" y1="180" x2="580" y2="180" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+  <line x1="80" y1="270" x2="580" y2="270" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+  <line x1="80" y1="360" x2="580" y2="360" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+
+  <rect x="95"  y="320" width="52" height="100" rx="5" fill="rgba(124,58,237,0.45)"/>
+  <rect x="165" y="275" width="52" height="145" rx="5" fill="rgba(124,58,237,0.55)"/>
+  <rect x="235" y="225" width="52" height="195" rx="5" fill="rgba(124,58,237,0.65)"/>
+  <rect x="305" y="245" width="52" height="175" rx="5" fill="rgba(124,58,237,0.60)"/>
+  <rect x="375" y="175" width="52" height="245" rx="5" fill="url(#barA)"/>
+  <rect x="445" y="135" width="52" height="285" rx="5" fill="url(#barB)"/>
+  <rect x="515" y="155" width="52" height="265" rx="5" fill="url(#barA)"/>
+
+  <polyline points="121,370 191,320 261,272 331,292 401,222 471,182 541,202" fill="none" stroke="#e9d5ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="471" cy="182" r="5" fill="#c4b5fd"/>
+  <circle cx="541" cy="202" r="5" fill="#c4b5fd"/>
+
+  <rect x="650" y="50" width="330" height="140" rx="14" fill="rgba(255,255,255,0.04)" stroke="rgba(167,139,250,0.3)" stroke-width="1"/>
+  <text x="670" y="85"  fill="#a78bfa" font-size="11" font-family="Arial, sans-serif" font-weight="700">VENTAS NETAS</text>
+  <text x="670" y="125" fill="#ffffff" font-size="34" font-family="Arial, sans-serif" font-weight="800">2.4 M €</text>
+  <text x="670" y="158" fill="#4ade80" font-size="13" font-family="Arial, sans-serif">▲ +18.5% vs mes anterior</text>
+
+  <rect x="650" y="210" width="330" height="140" rx="14" fill="rgba(255,255,255,0.04)" stroke="rgba(167,139,250,0.3)" stroke-width="1"/>
+  <text x="670" y="245" fill="#a78bfa" font-size="11" font-family="Arial, sans-serif" font-weight="700">% CUMPL. OBJETIVO</text>
+  <text x="670" y="285" fill="#ffffff" font-size="34" font-family="Arial, sans-serif" font-weight="800">94.2%</text>
+  <text x="670" y="320" fill="#fbbf24" font-size="13" font-family="Arial, sans-serif">● En seguimiento</text>
+
+  <rect x="650" y="370" width="330" height="90" rx="14" fill="rgba(255,255,255,0.04)" stroke="rgba(167,139,250,0.3)" stroke-width="1"/>
+  <text x="670" y="405" fill="#a78bfa" font-size="11" font-family="Arial, sans-serif" font-weight="700">TICKET MEDIO</text>
+  <text x="670" y="440" fill="#ffffff" font-size="28" font-family="Arial, sans-serif" font-weight="800">€ 1,842</text>
+
+  <rect x="40" y="472" width="940" height="2" fill="rgba(124,58,237,0.3)"/>
+  <text x="40"  y="500" fill="rgba(255,255,255,0.85)" font-size="20" font-family="Arial, sans-serif" font-weight="800">Power BI Ejecutivo</text>
+  <text x="270" y="500" fill="#7c3aed" font-size="20" font-family="Arial, sans-serif" font-weight="300">|</text>
+  <text x="290" y="500" fill="#a78bfa" font-size="14" font-family="Arial, sans-serif">Convertir métricas en decisiones</text>
+</svg>
