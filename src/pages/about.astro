@@ -1,33 +1,206 @@
 ---
-import AboutHeroImage from '../assets/blog-placeholder-about.jpg';
-import Layout from '../layouts/BlogPost.astro';
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import profileImage from '../images/profile.webp';
 ---
 
 <Layout
-	title="Sobre mí"
-	description="De la pista a la estrategia de datos. Conoce a Fran Fuerte."
-	pubDate={new Date('August 06 2026')}
-	heroImage={AboutHeroImage}
+	title="Sobre mí — Fran Fuerte"
+	description="De pizzero y socorrista a Data Analytics Manager en Avanade. La historia real detrás de los datos."
 >
-	<h3>De la pista a la estrategia de datos</h3>
-	
-	<p>
-		No aprendí a liderar en un MBA de despacho, sino haciéndome a mí mismo desde abajo, en la pista y en la vida real. Como Data Manager y ex-entrenador de balonmano, aplico la misma intensidad al mundo de los datos: visión de juego, resiliencia y cohesión de equipo.
-	</p>
+	<div class="min-h-screen bg-[#060816] text-slate-300" style="font-family: var(--font-atkinson, Arial, sans-serif)">
+		<Header />
 
-	<p>
-		He recorrido el camino desde lo operativo hasta la dirección estratégica. Mi filosofía es clara: la tecnología más puntera (Microsoft Fabric, Azure, Power BI) no sirve de nada si no hay una estrategia sólida detrás y, sobre todo, un equipo motivado capaz de ejecutarla.
-	</p>
+		<main class="mx-auto max-w-3xl px-6 py-12 sm:px-8">
 
-	<h4>¿Cómo aporto valor?</h4>
-	
-	<ul>
-		<li><strong>Resultados, no empates:</strong> Ayudo a las empresas a traducir su estrategia de negocio en soluciones de datos robustas y rentables.</li>
-		<li><strong>Liderazgo potenciador:</strong> Transformo grupos de técnicos individuales en unidades de alto rendimiento.</li>
-		<li><strong>Traductor del negocio:</strong> Hablo el idioma de los datos, el del negocio y, lo más importante, el de las personas.</li>
-	</ul>
+			<!-- Intro -->
+			<header class="mb-14">
+				<p class="mb-3 text-sm font-semibold uppercase tracking-[0.3em] text-violet-300">Sobre mí</p>
+				<h1 class="text-4xl font-black leading-tight tracking-tight text-white sm:text-5xl">
+					He repartido pizzas, entrenado equipos y conducido rutas.
+				</h1>
+				<p class="mt-6 text-xl leading-8 text-slate-300">
+					Todo eso me hizo mejor en lo que hago ahora.
+				</p>
+			</header>
 
-	<p>
-		Si buscas un <em>partner</em> que combine estrategia técnica con valores humanos innegociables, estamos en el mismo equipo.
-	</p>
+			<!-- Profile image -->
+			<div class="mb-14 overflow-hidden rounded-2xl border border-white/10">
+				<img
+					src={profileImage.src}
+					alt="Fran Fuerte — Data Analytics Manager"
+					class="w-full max-h-[420px] object-cover object-top"
+					loading="eager"
+					decoding="async"
+				/>
+			</div>
+
+			<!-- Story -->
+			<div class="prose-about space-y-10">
+
+				<section>
+					<h2 class="mb-4 text-2xl font-black tracking-tight text-white">El punto de partida</h2>
+					<p class="leading-8 text-slate-300">
+						Nací en Málaga. Estudié en la Universidad de Málaga entre 2007 y 2010. Y antes de que me pusieran delante de una pantalla con dashboards de Power BI, tuve empleos que ahora la gente llama "de antes": repartir pizzas, vigilar playas, mover cajas, conducir rutas y procesar operaciones bancarias.
+					</p>
+					<p class="leading-8 text-slate-300">
+						Nunca lo viví como un problema. Lo viví como un aprendizaje brutal de cómo funciona el mundo real, ese que después me tocó representar en tablas de datos.
+					</p>
+				</section>
+
+				<section>
+					<h2 class="mb-4 text-2xl font-black tracking-tight text-white">Lo que cada trabajo me enseñó de verdad</h2>
+
+					<div class="space-y-8">
+
+						<div class="rounded-2xl border border-white/10 bg-white/5 p-6">
+							<p class="mb-1 text-xs font-semibold uppercase tracking-widest text-violet-300">Trabajo 01</p>
+							<h3 class="text-lg font-bold text-white">Pizzero</h3>
+							<p class="mt-3 leading-7 text-slate-300">
+								Cuando tienes diez pedidos en cola y el horno no da más de sí, aprendes algo que ningún libro de gestión explica bien: <strong class="text-white">la priorización bajo presión</strong>. Qué sale primero, cuándo se puede batching, cuándo no. Cómo comunicarle a un cliente que lleva cuarenta minutos esperando sin que se vaya de malas.
+							</p>
+							<p class="mt-2 leading-7 text-slate-300">
+								Eso lo sigo usando hoy cuando hay cinco proyectos en paralelo y todo el mundo dice que lo suyo es urgente.
+							</p>
+						</div>
+
+						<div class="rounded-2xl border border-white/10 bg-white/5 p-6">
+							<p class="mb-1 text-xs font-semibold uppercase tracking-widest text-violet-300">Trabajo 02</p>
+							<h3 class="text-lg font-bold text-white">Socorrista</h3>
+							<p class="mt-3 leading-7 text-slate-300">
+								El socorrismo te cambia cómo procesas el riesgo para siempre. No es que te vuelvas temerario ni paranoico: aprendes a <strong class="text-white">leer señales antes de que el problema explote</strong>. A actuar en menos tiempo del que tardas en pensarlo. Y a mantener la cabeza fría cuando alguien a tu lado la está perdiendo.
+							</p>
+							<p class="mt-2 leading-7 text-slate-300">
+								En datos, eso se llama detección temprana y gestión de incidencias. En una playa, se llama que alguien llega vivo a casa.
+							</p>
+						</div>
+
+						<div class="rounded-2xl border border-white/10 bg-white/5 p-6">
+							<p class="mb-1 text-xs font-semibold uppercase tracking-widest text-violet-300">Trabajo 03</p>
+							<h3 class="text-lg font-bold text-white">Mozo de almacén</h3>
+							<p class="mt-3 leading-7 text-slate-300">
+								Mover mercancía durante horas te da una perspectiva muy concreta sobre los procesos: qué fluye bien, qué crea cuellos de botella, qué se está haciendo así "porque siempre se hizo así". En el almacén no hay dashboards. Hay cajas, pasillos y tiempos. Si algo tarda el doble de lo que debería, lo notas en el cuerpo.
+							</p>
+							<p class="mt-2 leading-7 text-slate-300">
+								Esa <strong class="text-white">visión de proceso desde dentro</strong> es lo que me permite hoy no solo modelar datos, sino entender qué está generando esos datos y por qué.
+							</p>
+						</div>
+
+						<div class="rounded-2xl border border-white/10 bg-white/5 p-6">
+							<p class="mb-1 text-xs font-semibold uppercase tracking-widest text-violet-300">Trabajo 04</p>
+							<h3 class="text-lg font-bold text-white">Conductor</h3>
+							<p class="mt-3 leading-7 text-slate-300">
+								Conducir como trabajo te curte en algo que se subestima: <strong class="text-white">la paciencia con propósito</strong>. No es resignación. Es saber que hay cosas que no puedes controlar —el tráfico, el clima, el tiempo de otros— y centrar la energía en lo que sí puedes. Llegar. Hacerlo bien. A tiempo.
+							</p>
+							<p class="mt-2 leading-7 text-slate-300">
+								En proyectos de datos largos, eso vale oro.
+							</p>
+						</div>
+
+						<div class="rounded-2xl border border-white/10 bg-white/5 p-6">
+							<p class="mb-1 text-xs font-semibold uppercase tracking-widest text-violet-300">Trabajo 05</p>
+							<h3 class="text-lg font-bold text-white">Entrenador de balonmano</h3>
+							<p class="mt-3 leading-7 text-slate-300">
+								Nueve años entrenando en el Club Balonmano Málaga (2008–2017). Aquí no solo aprendí a gestionar equipos: aprendí a <strong class="text-white">leer a las personas</strong>. Qué les motiva, cuándo están al límite, cuándo necesitan un empujón y cuándo necesitan que les dejes en paz.
+							</p>
+							<p class="mt-2 leading-7 text-slate-300">
+								Un equipo de datos tiene las mismas dinámicas que un vestuario: hay quien necesita autonomía, quien necesita estructura, quien rinde más en equipo y quien lo da todo en solitario. Eso no te lo enseña un curso de liderazgo.
+							</p>
+						</div>
+
+						<div class="rounded-2xl border border-white/10 bg-white/5 p-6">
+							<p class="mb-1 text-xs font-semibold uppercase tracking-widest text-violet-300">Trabajo 06</p>
+							<h3 class="text-lg font-bold text-white">Administrativo bancario</h3>
+							<p class="mt-3 leading-7 text-slate-300">
+								La banca me enseñó que <strong class="text-white">la confianza se construye con exactitud</strong>. Un decimal mal puesto no es un error técnico, es un problema de reputación. Trabajar con datos financieros sensibles, procesos regulados y clientes que confían en ti con su dinero te da un nivel de rigor que después no se pierde.
+							</p>
+							<p class="mt-2 leading-7 text-slate-300">
+								También aprendí que los sistemas más críticos suelen tener las interfaces más horribles, y que eso no es excusa para no entenderlos.
+							</p>
+						</div>
+
+					</div>
+				</section>
+
+				<section>
+					<h2 class="mb-4 text-2xl font-black tracking-tight text-white">El salto a los datos</h2>
+					<p class="leading-8 text-slate-300">
+						En Opplus fue donde todo empezó a encajar. Empecé a trabajar con análisis de datos y vi que tenía una ventaja rara: entendía el negocio porque lo había vivido desde posiciones operativas. No era el analista que explicaba los datos sin saber de dónde venían. Era el que sabía por qué ese número estaba mal antes de buscar el bug.
+					</p>
+					<p class="leading-8 text-slate-300">
+						En 2018 me nombraron <strong class="text-white">Empleado del Año</strong>. En 2019 entré en el <strong class="text-white">Talent Pool</strong> (top 10% de la organización). No porque supiera más que los demás en técnica, sino porque combinaba la parte técnica con entender qué problema se estaba resolviendo.
+					</p>
+					<p class="leading-8 text-slate-300">
+						Después llegó Avanade, y con ello, Microsoft Fabric.
+					</p>
+				</section>
+
+				<section>
+					<h2 class="mb-4 text-2xl font-black tracking-tight text-white">Hoy</h2>
+					<p class="leading-8 text-slate-300">
+						Soy <strong class="text-white">Data Analytics Manager en Avanade</strong>. Trabajo con Microsoft Fabric, Power BI y Azure para ayudar a organizaciones a convertir sus datos en decisiones. En 2024 me nombraron <strong class="text-white">Power BI Champion</strong> y en 2025 <strong class="text-white">Microsoft Fabric Champion</strong>.
+					</p>
+					<p class="leading-8 text-slate-300">
+						Pero más allá de los títulos: en enero de 2022 co-fundé el <strong class="text-white">Fabric &amp; Power BI Málaga User Group</strong>, porque creo que la comunidad de datos en español merece más y mejor contenido técnico. Seguimos activos, seguimos creciendo.
+					</p>
+					<p class="leading-8 text-slate-300">
+						Este blog es parte de eso. Artículos técnicos reales, en español, sin relleno. Sobre lo que funciona y lo que no en Fabric, Power BI y arquitecturas de datos modernas.
+					</p>
+				</section>
+
+				<!-- Skills grid -->
+				<section>
+					<h2 class="mb-6 text-2xl font-black tracking-tight text-white">Tecnologías con las que trabajo</h2>
+					<div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
+						{[
+							'Microsoft Fabric',
+							'Power BI',
+							'Azure Synapse',
+							'OneLake / Delta Lake',
+							'PySpark / Python',
+							'DAX · SQL · T-SQL',
+							'Data Factory',
+							'Arquitectura Medallion',
+							'Semantic Modeling',
+						].map((skill) => (
+							<div class="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-slate-200">
+								{skill}
+							</div>
+						))}
+					</div>
+				</section>
+
+				<!-- CTA -->
+				<section class="rounded-2xl border border-violet-500/20 bg-gradient-to-br from-violet-950/60 to-indigo-950/60 p-8">
+					<h2 class="text-xl font-black tracking-tight text-white">¿Hablamos?</h2>
+					<p class="mt-3 leading-7 text-slate-300">
+						Si tienes una pregunta técnica, un proyecto o simplemente quieres conectar con alguien que ha cargado cajas y ahora carga datos, puedes encontrarme aquí:
+					</p>
+					<div class="mt-5 flex flex-wrap gap-3">
+						<a
+							href="https://es.linkedin.com/in/franfuertegrund"
+							target="_blank"
+							rel="noreferrer"
+							class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-violet-600 to-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-violet-600/25 transition hover:translate-y-[-1px]"
+						>
+							<svg viewBox="0 0 24 24" class="h-4 w-4" fill="currentColor" aria-hidden="true">
+								<path d="M6.94 8.5A1.56 1.56 0 1 0 6.94 5.38a1.56 1.56 0 0 0 0 3.12ZM5.5 9.75h2.88V18H5.5zM10.16 9.75h2.76v1.13h.04c.38-.72 1.31-1.48 2.7-1.48 2.89 0 3.42 1.9 3.42 4.37V18h-2.88v-3.88c0-1.08-.02-2.47-1.51-2.47-1.51 0-1.74 1.18-1.74 2.39V18h-2.87V9.75z" />
+							</svg>
+							LinkedIn
+						</a>
+						<a
+							href="mailto:fran.fuerte.grund@avanade.com"
+							class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-5 py-2.5 text-sm font-semibold text-slate-100 transition hover:bg-white/10"
+						>
+							Correo directo
+						</a>
+					</div>
+				</section>
+
+			</div>
+		</main>
+
+		<Footer />
+	</div>
 </Layout>

@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
+import Footer from '../components/Footer.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 import NewsletterBanner from '../components/NewsletterBanner.astro';
 import profileImage from '../images/profile.webp';
@@ -159,14 +160,6 @@ const highlights = [
 
 		</main>
 
-		<footer class="mx-auto flex max-w-7xl flex-col gap-3 border-t border-white/10 px-6 py-6 text-sm text-slate-400 sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-10">
-			<p>© 2026 Fran Fuerte. Todos los derechos reservados.</p>
-			<div class="flex flex-wrap gap-4">
-				<a href="#about"  class="transition hover:text-white">Sobre mí</a>
-				<a href="/blog"   class="transition hover:text-white">Blog</a>
-				<a href="https://www.linkedin.com/in/franfuertegrund/" target="_blank" rel="noreferrer" class="transition hover:text-white">LinkedIn</a>
-				<a href="mailto:fran.fuerte.grund@outlook.es" class="transition hover:text-white">Contacto</a>
-			</div>
-		</footer>
+		<Footer />
 	</div>
 </Layout>
