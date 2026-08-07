@@ -9,6 +9,8 @@ El mayor problema en organizaciones con datos no es la falta de información: es
 
 En este artículo te cuento cómo configurarlo desde cero con criterio real.
 
+---
+
 ## ¿Qué es OneLake y el OneLake Catalog?
 
 **OneLake** es el almacenamiento unificado de Microsoft Fabric: un único data lake lógico que aloja todos los datos de la organización, independientemente de la herramienta que los creó (Lakehouse, Warehouse, Eventstream, etc.).
@@ -23,6 +25,8 @@ El **OneLake Catalog** es la capa de **gobernanza y descubrimiento** que permite
 
 > "Data governance is not about control. It's about trust." — Microsoft Fabric Adoption Framework
 
+---
+
 ## Conceptos clave antes de configurar
 
 Antes de tocar cualquier configuración, necesitas entender los tres mecanismos de **endorsement** de Fabric:
@@ -33,7 +37,14 @@ Antes de tocar cualquier configuración, necesitas entender los tres mecanismos 
 | **Certified** | Admin del tenant o de capacidad | "Este dato cumple estándares organizacionales" |
 | **Master data** | Admin del tenant | "Esta es la fuente definitiva de verdad" |
 
-## Paso 1: Habilitar Purview en Fabric
+<div class="callout callout-info">
+  <strong>Por qué esto importa</strong>
+  Sin endorsement, un analista que busca datos de ventas puede encontrar 15 datasets distintos sin saber cuál es el correcto. Con endorsement, hay uno Certified y todos los demás quedan como trabajo en progreso.
+</div>
+
+---
+
+## Paso 1 — Habilitar Purview en Fabric
 
 El OneLake Catalog se integra con Microsoft Purview. Actívalo desde el **Portal de Administración de Fabric → Configuración del tenant → Microsoft Purview Hub**.
 
@@ -53,7 +64,9 @@ Write-Output "Estado Purview en Fabric: $($purviewSetting.enabled)"
 # Si es $false, habilítalo desde el Portal de Admin
 ```
 
-## Paso 2: Configurar etiquetas de sensibilidad
+---
+
+## Paso 2 — Configurar etiquetas de sensibilidad
 
 Las etiquetas de sensibilidad (Microsoft Information Protection) clasifican la confidencialidad de cada ítem de Fabric. Se aplican automáticamente a Lakehouses, Warehouses, modelos semánticos y pipelines.
 
@@ -106,7 +119,9 @@ response = requests.patch(
 print("OK" if response.status_code == 200 else f"Error: {response.text}")
 ```
 
-## Paso 3: Endorsement de datasets — el corazón de la governance
+---
+
+## Paso 3 — Endorsement de datasets: el corazón de la governance
 
 El proceso de certificación define qué datos son fuentes de confianza. Un script de auditoría para identificar ítems sin endorsement:
 
@@ -139,12 +154,20 @@ def get_unendorsed_items(workspace_id: str, access_token: str) -> pd.DataFrame:
     
     return pd.DataFrame(unendorsed)
 
+
 df = get_unendorsed_items("tu-workspace-id", access_token)
-print(f"{len(df)} ítems sin endorsement:")
+print(f"{len(df)} items sin endorsement:")
 print(df.to_string(index=False))
 ```
 
-## Paso 4: Nomenclatura para un linaje de datos limpio
+<div class="callout callout-tip">
+  <strong>Consejo de implementación</strong>
+  Ejecuta este script de auditoría semanalmente y asigna un "data steward" por dominio de datos. Esa persona es responsable de certificar o archivar los ítems sin endorsement en su área.
+</div>
+
+---
+
+## Paso 4 — Nomenclatura para un linaje de datos limpio
 
 El linaje en Fabric se visualiza automáticamente en el **Data Lineage View** del workspace. Para que sea legible necesitas una nomenclatura consistente:
 
@@ -191,7 +214,8 @@ def update_item_description(workspace_id: str, item_id: str,
     
     return response.status_code == 200
 
-# Ejemplo
+
+# Ejemplo de uso
 update_item_description(
     workspace_id=WORKSPACE_ID,
     item_id=LAKEHOUSE_ID,
@@ -206,7 +230,9 @@ update_item_description(
 )
 ```
 
-## Paso 5: Row-Level Security en el modelo semántico
+---
+
+## Paso 5 — Row-Level Security en el modelo semántico
 
 El último pilar de governance es controlar quién ve qué datos. RLS en el modelo semántico de Power BI / Fabric:
 
@@ -226,13 +252,22 @@ RETURN
     [Region] IN RegionesPermitidas
 ```
 
+<div class="callout callout-warning">
+  <strong>Testa RLS antes de publicar</strong>
+  Usa la funcionalidad "Ver como" en Power BI Desktop para verificar que cada usuario ve solo sus datos. Un error en RLS puede exponer información sensible de forma silenciosa.
+</div>
+
+---
+
 ## Lo que dicen los expertos sobre governance en Fabric
 
-[Reza Rad (RADACAD)](https://radacad.com) tiene una de las guías más completas sobre governance en Fabric, incluyendo cómo estructurar workspaces por dominio y capacidad. Su enfoque pragmático es especialmente útil para organizaciones que empiezan desde cero.
+[Reza Rad (RADACAD)](https://radacad.com) tiene una de las guías más completas sobre governance en Fabric, incluyendo cómo estructurar workspaces por dominio y capacidad.
 
 El equipo de [Guy in a Cube](https://guyinacube.com) (Adam Saxton y Patrick LeBlanc) tiene contenido excelente sobre cómo implementar governance sin ralentizar la velocidad del equipo de datos.
 
 [Marc Lelijveld](https://marclelijveld.com) tiene artículos muy técnicos sobre Deployment Pipelines y cómo gestionar el ciclo de vida de los ítems de Fabric, que complementan perfectamente la governance del catálogo.
+
+---
 
 ## Recursos de Microsoft
 
@@ -242,8 +277,15 @@ El equipo de [Guy in a Cube](https://guyinacube.com) (Adam Saxton y Patrick LeBl
 - [Fabric REST API — Items](https://learn.microsoft.com/es-es/rest/api/fabric/core/items)
 - [Row-Level Security en Power BI](https://learn.microsoft.com/es-es/power-bi/enterprise/service-admin-rls)
 
+---
+
 ## Conclusión
 
-La governance en Microsoft Fabric no es opcional en entornos de producción. El OneLake Catalog, combinado con Microsoft Purview, te da las herramientas para construir una capa de **confianza** sobre tus datos: quién los creó, qué significan, si son fiables y quién puede verlos.
+La governance en Microsoft Fabric no es opcional en entornos de producción.
 
-Empieza por los primeros tres pasos (habilitar Purview, etiquetar sensibilidad, certificar datasets clave) y construye desde ahí. La governance perfecta no existe, pero la governance progresiva sí.
+<div class="callout callout-tip">
+  <strong>Por dónde empezar</strong>
+  Empieza por los primeros tres pasos: habilitar Purview, etiquetar sensibilidad y certificar datasets clave. Construye desde ahí de forma progresiva. La governance perfecta no existe, pero la governance progresiva sí.
+</div>
+
+El OneLake Catalog, combinado con Microsoft Purview, te da las herramientas para construir una capa de **confianza** sobre tus datos: quién los creó, qué significan, si son fiables y quién puede verlos.

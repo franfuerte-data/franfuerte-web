@@ -1,0 +1,313 @@
+---
+title: "Claude + Power BI MCP: 27 medidas de Time Intelligence en segundos sin tocar el editor DAX"
+description: "Cómo conectar Claude Desktop a Power BI mediante el Model Context Protocol (MCP). Guía completa en español: instalación, configuración JSON, tabla de fechas, 27 medidas automáticas, limitaciones reales y el coste en tokens que nadie te cuenta."
+pubDate: "2026-08-01"
+heroImage: '../../assets/covers/cover-claude-mcp.svg'
+---
+
+En mayo de 2026, Reza Rad publicó un artículo que cambió cómo muchos desarrolladores de Power BI ven el trabajo con modelos semánticos. El titular era directo: _"No Code Power BI — How to Use Claude and the Power BI Modeling MCP Server"_. La demostración: 27 medidas de Time Intelligence creadas en segundos. Sin abrir el editor DAX. Sin escribir una sola función.
+
+Este artículo es la versión española ampliada: más contexto, más fuentes, más limitaciones reales, y todo lo que necesitas para probarlo hoy mismo.
+
+---
+
+## ¿Qué es MCP y por qué importa para Power BI?
+
+MCP significa **Model Context Protocol**, el estándar abierto que permite a los modelos de IA ejecutar acciones en sistemas externos. Antes de MCP, Claude (o cualquier LLM) podía sugerirte código DAX. Con MCP, Claude lo ejecuta directamente en tu modelo de Power BI.
+
+La distinción que usa Reza Rad en RADACAD lo resume perfectamente:
+
+> Claude es el **cerebro**. El servidor MCP son las **manos** que actúan en el modelo.
+
+No es un copiloto que te hace sugerencias. Es un agente que modifica tu archivo `.pbix` o `.pbip` mientras tú observas los cambios en tiempo real en Power BI Desktop.
+
+Microsoft anunció esta funcionalidad en **Ignite noviembre de 2025** y actualmente está en **Public Preview**.
+
+---
+
+## Dos servidores MCP para Power BI — no confundas cuál es cuál
+
+<img src="/charts/mcp-comparison.svg" alt="Comparación: Power BI Modeling MCP Server (local) vs Power BI Remote MCP Server (cloud)" style={{width:'100%',marginTop:'1rem',marginBottom:'1.5rem',borderRadius:'0.75rem'}} />
+
+Existen dos servidores MCP oficiales de Microsoft para Power BI, y son completamente distintos:
+
+| Servidor | Modo | Requisitos | Para qué sirve |
+|---|---|---|---|
+| **Power BI Modeling MCP Server** | Local (stdio) | Power BI Desktop + VS Code | Crear y editar el modelo semántico (tablas, medidas, relaciones) |
+| **Power BI Remote MCP Server** | Cloud (HTTP) | Fabric F2+ o Premium P1 | Consultar datos y generar insights desde modelos publicados en el servicio |
+
+<div class="callout callout-info">
+  <strong>Nota clave</strong>
+  Este artículo cubre el <strong>servidor local</strong>, que no requiere Fabric ni licencias Premium. Solo necesitas Power BI Desktop y una suscripción de pago a Claude.
+</div>
+
+---
+
+## Lo que puede hacer el servidor MCP local
+
+- Crear tablas calculadas con DAX (incluyendo tablas de fechas completas)
+- Añadir medidas, renombrarlas y organizarlas en Display Folders
+- Crear y modificar relaciones entre tablas
+- Marcar tablas como tabla de fechas
+- Añadir descripciones automáticas a medidas y columnas
+- Cambiar convenciones de nomenclatura en masa (100+ objetos a la vez)
+- Trabajar con archivos `.pbix` y `.pbip` (formato de proyecto)
+- Generar documentación del modelo
+
+<div class="callout callout-danger">
+  <strong>Lo que NO puede hacer</strong>
+  Modificar páginas del informe ni crear visualizaciones · Guardar el archivo (guardas tú manualmente) · Ejecutarse en macOS (solo Windows) · Funcionar con el plan gratuito de Claude · Acceder a modelos en My Workspace del servicio · Garantizar DAX complejo sin errores semánticos — siempre valida.
+</div>
+
+---
+
+## Prerrequisitos
+
+<div class="step-card"><div class="step-number">1</div><div class="step-content"><strong>Windows 10 / 11</strong><p>El servidor MCP solo funciona en Windows. No hay versión para macOS ni Linux.</p></div></div>
+
+<div class="step-card"><div class="step-number">2</div><div class="step-content"><strong>Power BI Desktop — versión noviembre 2025 o posterior</strong><p>Actualiza desde Microsoft Store o desde el portal oficial de descarga.</p></div></div>
+
+<div class="step-card"><div class="step-number">3</div><div class="step-content"><strong>Visual Studio Code</strong><p>Gratuito. Se usa como canal de distribución del ejecutable del servidor MCP.</p></div></div>
+
+<div class="step-card"><div class="step-number">4</div><div class="step-content"><strong>Claude Desktop — plan de pago</strong><p>Pro mínimo. El plan gratuito no permite conectar servidores MCP. No necesitas Fabric ni licencia Premium.</p></div></div>
+
+---
+
+## Instalación paso a paso
+
+### Paso 1 — Instalar la extensión en VS Code
+
+Abre VS Code, ve al panel de extensiones y busca:
+
+```
+Power BI Modeling MCP Server
+```
+
+El publicador es **Analysis Services** (Microsoft). Instala la extensión. Esto descarga el ejecutable `.exe` del servidor en tu carpeta de extensiones de VS Code.
+
+
+### Paso 2 — Encontrar la ruta del ejecutable
+
+Navega hasta esta ruta en el Explorador de Windows:
+
+```
+C:\Users\TU_USUARIO\.vscode\extensions\
+```
+
+Busca la carpeta que empieza por `analysis-services.powerbi-modeling-mcp-`. Entra en la subcarpeta `server` y localiza el archivo `powerbi-modeling-mcp.exe`. Haz clic derecho → **Copiar como ruta de acceso**.
+
+
+### Paso 3 — Configurar Claude Desktop
+
+Abre Claude Desktop → **Archivo → Configuración → Developer → Edit Config**. Esto abre el archivo `claude_desktop_config.json`. Añade la siguiente sección:
+
+```json
+{
+  "mcpServers": {
+    "powerbi-modeling-mcp": {
+      "command": "C:\\Users\\TuUsuario\\.vscode\\extensions\\analysis-services.powerbi-modeling-mcp-0.1.9-win32-x64\\server\\powerbi-modeling-mcp.exe",
+      "args": ["--start"],
+      "type": "stdio"
+    }
+  }
+}
+```
+
+<div class="callout callout-warning">
+  <strong>Error más frecuente: barras invertidas</strong>
+  <p>En el JSON, cada barra invertida de la ruta de Windows debe escribirse doble. Es la causa número uno de que el servidor no arranque. Pega la ruta en un bloc de notas, reemplaza manualmente y luego copia al config.</p>
+</div>
+
+Guarda el archivo y **cierra Claude Desktop completamente** (no solo la ventana; el proceso se queda en segundo plano). Vuelve a abrirlo. Si la configuración es correcta, verás un icono de martillo 🔨 en la barra de entrada de chat.
+
+
+### Paso 4 — Conectar Claude a tu modelo
+
+Abre tu archivo de Power BI Desktop. En Claude Desktop, escribe:
+
+```
+Connect to [nombre de tu archivo] in Power BI Desktop
+```
+
+Claude establece una conexión localhost con el modelo abierto. La comunicación es local: tus datos no viajan a ningún servidor externo en este paso.
+
+---
+
+## Crear una tabla de fechas con lenguaje natural
+
+Con el modelo conectado, puedes hacer esto:
+
+```
+Add a date table starting from 2020 ending 2026 and connect it 
+to FactVentas using FechaVentaKey
+```
+
+Claude hace tres cosas automáticamente:
+
+1. Crea la tabla de fechas como tabla calculada DAX
+2. Genera la relación con `FactVentas` usando `FechaVentaKey`
+3. Marca la tabla como tabla de fechas
+
+Los cambios aparecen en tiempo real en la vista de modelo de Power BI Desktop. La tabla de fechas generada incluye: Fecha, Año, Trimestre, Mes (número y nombre), Semana, Día de la semana, Día del mes, Es fin de semana — columnas que construir manualmente llevaría 30 minutos.
+
+---
+
+## 27 medidas de Time Intelligence en segundos
+
+<div class="stat-row">
+  <div class="stat-card"><div class="stat-value">27</div><div class="stat-label">medidas DAX automáticas</div></div>
+  <div class="stat-card"><div class="stat-value amber">4</div><div class="stat-label">grupos: YTD / QTD / MTD / YoY</div></div>
+  <div class="stat-card"><div class="stat-value">2h</div><div class="stat-label">de trabajo manual sustituidas</div></div>
+</div>
+
+Este es el momento que convierte a los escépticos. Un prompt:
+
+```
+Create a measure table with all time intelligence calculations 
+for sum of SalesAmount from FactVentas table
+```
+
+Claude crea automáticamente:
+
+- Una tabla de medidas vacía (contenedor separado — buena práctica de modelado)
+- **27 medidas DAX** organizadas en Display Folders: Year-to-Date, Quarter-to-Date, Month-to-Date, Year-over-Year, con variaciones absolutas y porcentuales
+- Descripciones automáticas para cada medida
+
+Ejemplo de medidas generadas:
+
+```dax
+Ventas YTD = 
+CALCULATE([Total Ventas], DATESYTD(DimFecha[Fecha]))
+
+Ventas MoM % = 
+VAR VentasActual   = [Total Ventas]
+VAR VentasAnterior = CALCULATE([Total Ventas], DATEADD(DimFecha[Fecha], -1, MONTH))
+RETURN
+DIVIDE(VentasActual - VentasAnterior, VentasAnterior)
+
+Ventas YoY = 
+CALCULATE([Total Ventas], DATEADD(DimFecha[Fecha], -1, YEAR))
+```
+
+<div class="callout callout-tip">
+  <strong>Valida siempre antes de producción</strong>
+  Las medidas vienen directamente utilizables. Aun así, valídalas contra tus datos antes de publicar en producción. Para DAX complejo o modelos con relaciones inusuales, revisa la lógica de contexto.
+</div>
+
+---
+
+## El coste real en tokens — lo que nadie te cuenta
+
+<img src="/charts/bar-token-cost.svg" alt="Coste estimado por sesión con Claude Sonnet + Power BI MCP Server" style={{width:'100%',marginTop:'1rem',marginBottom:'1.5rem',borderRadius:'0.75rem'}} />
+
+Michael Hannecke publicó en Medium el análisis más honesto sobre los costes reales. Sus datos:
+
+- Un modelo de **26.000 líneas** requiere ~210.000 tokens por sesión
+- Coste aproximado: **$0,60+ por sesión** con Claude Sonnet
+
+La solución: **acotar los prompts a tablas específicas**, no pedir que Claude analice el modelo completo.
+
+```
+-- Mal: contexto innecesario — Claude carga TODO el modelo
+"Analiza todo el modelo y añade descripciones a todos los objetos"
+
+-- Bien: acotado y eficiente — solo la tabla indicada
+"Add Spanish descriptions to all measures in the Ventas measure table"
+```
+
+Un prompt bien acotado puede reducir el consumo de tokens un **70–90%**.
+
+---
+
+## Privacidad y gobernanza en entornos corporativos
+
+El servidor MCP local no envía tus datos a ningún servidor externo. Sin embargo, **la conversación con Claude sí pasa por la API de Anthropic**. Esto incluye:
+
+- Los metadatos del modelo (nombres de tablas, medidas, columnas)
+- Las expresiones DAX
+- Los resultados de las consultas que Claude ejecuta para validar
+
+<div class="callout callout-warning">
+  <strong>Precaución en entornos enterprise</strong>
+  Evalúa esto contra vuestra política de datos antes de usarlo con modelos que contengan información sensible o regulada. El servidor remoto de Power BI tiene implicaciones adicionales de seguridad documentadas en Microsoft Learn.
+</div>
+
+---
+
+## El flujo TMDL + Git: la joya oculta
+
+Si trabajas con archivos `.pbip` (Power BI Project format), los cambios que hace Claude via MCP se convierten en **diffs de código legibles en Git**. Esto significa:
+
+- Cada medida que añade Claude aparece como una línea de código en TMDL
+- Puedes hacer revisión de código (Pull Request) de los cambios del modelo
+- Tienes rollback completo si algo sale mal
+- Tu equipo puede auditar exactamente qué hizo la IA
+
+<div class="callout callout-tip">
+  <strong>El flujo más avanzado</strong>
+  IA genera cambios → equipo revisa como código → se integra en la rama principal. Igual que con software. Este flujo TMDL + Git + MCP es el que están adoptando los equipos más maduros.
+</div>
+
+---
+
+## ¿Y los informes? El plugin comunitario que cierra el hueco
+
+El servidor oficial de Microsoft solo toca el modelo semántico. No crea visualizaciones ni páginas de informe. Jonathan Pap publicó en GitHub `powerbi-report-mcp`, un servidor comunitario que complementa al oficial:
+
+<div class="choice-grid">
+  <div class="choice-card card-violet">
+    <h4>Power BI Modeling MCP (oficial)</h4>
+    <ul>
+      <li>Crea medidas, relaciones, tablas calculadas</li>
+      <li>Organiza Display Folders</li>
+      <li>Genera documentación del modelo</li>
+      <li>Formato .pbix y .pbip</li>
+    </ul>
+  </div>
+  <div class="choice-card card-blue">
+    <h4>powerbi-report-mcp (comunitario)</h4>
+    <ul>
+      <li>Crea y modifica páginas de informe</li>
+      <li>40+ tipos de visualización</li>
+      <li>Temas, formato condicional y filtros</li>
+      <li>Requiere Node.js 18+ y formato PBIR</li>
+    </ul>
+  </div>
+</div>
+
+Combinando ambos servidores, tienes un flujo de trabajo casi completamente dirigido por IA.
+
+---
+
+## Lo que dicen los que lo han probado en producción
+
+El equipo de SQORUS lleva meses usando el servidor MCP en proyectos de cliente:
+
+> "Tareas que antes llevaban días enteros ahora se completan en minutos."
+
+La aplicación más impactante: la **primera semana en un proyecto nuevo**. Cuando recibes un modelo existente, Claude puede documentarlo, auditar la nomenclatura, identificar medidas sin descripciones y organizar Display Folders en una sola sesión.
+
+El análisis de Primus Data en español destaca otro caso potente: imagina 200 medidas sin descripciones, con nombres inconsistentes y sin Display Folders. Un prompt: _"Add Spanish descriptions to all measures, organize them in display folders by functional area, and standardize names to PascalCase"_. Resultado en minutos.
+
+---
+
+## Lo que sigue siendo tuyo
+
+Reza Rad lo dice con claridad: esta herramienta **acelera las habilidades, no las sustituye**. Para que el prompt _"Create all time intelligence calculations for Sales Amount"_ funcione bien, tienes que saber qué es time intelligence, cuándo usar YTD vs MTD, qué relación de fechas necesita tu modelo.
+
+<div class="callout callout-tip">
+  <strong>La IA es un amplificador, no un atajo</strong>
+  El valor de la IA aquí es multiplicar la productividad de quien ya sabe lo que hace. No es un atajo para saltarse el aprendizaje — es un amplificador para quien ya entendió los conceptos.
+</div>
+
+---
+
+## Referencias
+
+- [RADACAD — Reza Rad: No Code Power BI: How to Use Claude and the Power BI Modeling MCP Server](https://radacad.com/no-code-power-bi-how-to-use-claude-and-the-power-bi-modeling-mcp-server/)
+- [Microsoft Learn — Power BI MCP Servers Overview](https://learn.microsoft.com/en-us/power-bi/developer/mcp/mcp-servers-overview)
+- [Michael Hannecke — What It Actually Means for Your BI Workflow (Medium)](https://medium.com/@michael.hannecke/microsofts-power-bi-modeling-mcp-server-what-it-actually-means-for-your-bi-workflow-b7afe99eef80)
+- [SQORUS — What if Claude managed your models (EN)](https://www.sqorus.com/en/connect-power-bi-desktop-claude-mcp-protocol/)
+- [Primus Data — Cómo conectar Claude a tu modelo semántico de Power BI con MCP (ES)](https://www.primusdata.net/2026/03/18/como-conectar-claude-a-tu-modelo-semantico-de-power-bi-con-mcp/)
+- [Jonathan Pap — Power BI Report MCP Server (GitHub)](https://github.com/jonathan-pap/powerbi-report-mcp)
+- [Microsoft/powerbi-modeling-mcp — GitHub oficial](https://github.com/microsoft/powerbi-modeling-mcp)

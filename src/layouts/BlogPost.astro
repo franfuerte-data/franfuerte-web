@@ -17,27 +17,36 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 	<head>
 		<BaseHead title={title} description={description} image={heroImage} article={true} />
 		<style>
-			.prose {
-				color: rgb(203 213 225);
-			}
+			/* ── Base prose ─────────────────────────────────────────── */
+			.prose { color: rgb(203 213 225); }
+
 			.prose h2 {
 				color: #fff;
-				font-size: 1.5rem;
+				font-size: 1.55rem;
 				font-weight: 800;
-				margin-top: 2.5rem;
-				margin-bottom: 1rem;
+				margin-top: 3.5rem;
+				margin-bottom: 1.25rem;
 				letter-spacing: -0.025em;
+				padding-top: 1rem;
+				border-top: 1px solid rgba(255,255,255,0.06);
 			}
 			.prose h3 {
 				color: #e2e8f0;
-				font-size: 1.2rem;
+				font-size: 1.15rem;
+				font-weight: 700;
+				margin-top: 2.5rem;
+				margin-bottom: 1rem;
+			}
+			.prose h4 {
+				color: #e2e8f0;
+				font-size: 1rem;
 				font-weight: 700;
 				margin-top: 2rem;
 				margin-bottom: 0.75rem;
 			}
 			.prose p {
-				margin-bottom: 1.25rem;
-				line-height: 1.8;
+				margin-bottom: 1.4rem;
+				line-height: 1.85;
 			}
 			.prose a {
 				color: #a78bfa;
@@ -45,79 +54,328 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 				text-underline-offset: 3px;
 				transition: color 0.15s;
 			}
-			.prose a:hover {
-				color: #c4b5fd;
-			}
-			.prose strong {
-				color: #e2e8f0;
-				font-weight: 700;
-			}
+			.prose a:hover { color: #c4b5fd; }
+			.prose strong { color: #e2e8f0; font-weight: 700; }
+			.prose em { color: #94a3b8; }
+
+			/* ── Blockquote ─────────────────────────────────────────── */
 			.prose blockquote {
 				border-left: 3px solid #7c3aed;
-				padding-left: 1.25rem;
-				margin: 1.5rem 0;
-				color: #94a3b8;
+				padding: 1rem 1.5rem;
+				margin: 2rem 0;
+				background: rgba(124,58,237,0.06);
+				border-radius: 0 0.75rem 0.75rem 0;
+				color: #c4b5fd;
 				font-style: italic;
+				font-size: 1.05rem;
+				line-height: 1.8;
 			}
+
+			/* ── Lists ──────────────────────────────────────────────── */
 			.prose ul {
-				list-style: disc;
-				padding-left: 1.5rem;
-				margin-bottom: 1.25rem;
+				list-style: none;
+				padding-left: 0;
+				margin: 1.25rem 0 1.75rem;
 				space-y: 0.5rem;
+			}
+			.prose ul li {
+				position: relative;
+				padding-left: 1.5rem;
+				margin-bottom: 0.6rem;
+				line-height: 1.75;
+			}
+			.prose ul li::before {
+				content: "→";
+				position: absolute;
+				left: 0;
+				color: #7c3aed;
+				font-weight: 700;
 			}
 			.prose ol {
 				list-style: decimal;
 				padding-left: 1.5rem;
-				margin-bottom: 1.25rem;
+				margin: 1.25rem 0 1.75rem;
 			}
-			.prose li {
-				margin-bottom: 0.4rem;
+			.prose ol li {
+				margin-bottom: 0.6rem;
+				line-height: 1.75;
+			}
+
+			/* ── Code — notebook style ──────────────────────────────── */
+			.prose pre {
+				background: #0d1117 !important;
+				border: none;
+				border-radius: 0 0 0.875rem 0.875rem;
+				padding: 1.5rem;
+				overflow-x: auto;
+				margin: 0;
+				font-size: 0.875rem;
 				line-height: 1.7;
 			}
-			.prose pre {
-				background: rgba(0, 0, 0, 0.5);
-				border: 1px solid rgba(255, 255, 255, 0.08);
-				border-radius: 0.75rem;
-				padding: 1.25rem;
-				overflow-x: auto;
-				margin: 1.5rem 0;
-				font-size: 0.875rem;
-				line-height: 1.6;
+			.code-notebook {
+				margin: 2.5rem 0;
+				border-radius: 0.875rem;
+				overflow: hidden;
+				border: 1px solid rgba(255,255,255,0.07);
+				box-shadow: 0 4px 24px rgba(0,0,0,0.3);
 			}
+			.code-header {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				padding: 0.55rem 1rem;
+				background: #161b22;
+				border-bottom: 1px solid rgba(255,255,255,0.06);
+			}
+			.code-dots {
+				display: flex;
+				gap: 6px;
+				align-items: center;
+			}
+			.code-dots span {
+				width: 11px;
+				height: 11px;
+				border-radius: 50%;
+			}
+			.code-dots span:nth-child(1) { background: #ef4444; }
+			.code-dots span:nth-child(2) { background: #f59e0b; }
+			.code-dots span:nth-child(3) { background: #22c55e; }
+			.code-lang {
+				font-size: 0.68rem;
+				color: #475569;
+				font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+				text-transform: uppercase;
+				letter-spacing: 0.14em;
+			}
+
+			/* ── Inline code ────────────────────────────────────────── */
 			.prose code:not(pre code) {
-				background: rgba(124, 58, 237, 0.15);
-				border: 1px solid rgba(124, 58, 237, 0.25);
+				background: rgba(124,58,237,0.15);
+				border: 1px solid rgba(124,58,237,0.25);
 				border-radius: 0.3rem;
-				padding: 0.15em 0.4em;
+				padding: 0.15em 0.45em;
 				font-size: 0.875em;
 				color: #c4b5fd;
+				font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
 			}
+
+			/* ── Tables ─────────────────────────────────────────────── */
 			.prose table {
 				width: 100%;
 				border-collapse: collapse;
-				margin: 1.5rem 0;
+				margin: 2.5rem 0;
 				font-size: 0.9rem;
+				border-radius: 0.75rem;
+				overflow: hidden;
+				border: 1px solid rgba(255,255,255,0.08);
+			}
+			.prose thead {
+				background: rgba(124,58,237,0.12);
 			}
 			.prose th {
-				background: rgba(124, 58, 237, 0.15);
-				border: 1px solid rgba(255, 255, 255, 0.1);
-				padding: 0.6rem 1rem;
+				border: none;
+				border-bottom: 1px solid rgba(255,255,255,0.08);
+				padding: 0.85rem 1.1rem;
 				text-align: left;
 				color: #e2e8f0;
 				font-weight: 700;
+				font-size: 0.85rem;
+				letter-spacing: 0.03em;
+				white-space: nowrap;
 			}
 			.prose td {
-				border: 1px solid rgba(255, 255, 255, 0.08);
-				padding: 0.6rem 1rem;
+				border: none;
+				border-bottom: 1px solid rgba(255,255,255,0.05);
+				padding: 0.8rem 1.1rem;
 				color: #cbd5e1;
+				vertical-align: top;
 			}
-			.prose tr:nth-child(even) td {
-				background: rgba(255, 255, 255, 0.02);
-			}
+			.prose tr:last-child td { border-bottom: none; }
+			.prose tr:nth-child(even) td { background: rgba(255,255,255,0.025); }
+			.prose tr:hover td { background: rgba(124,58,237,0.06); }
+
+			/* ── HR ─────────────────────────────────────────────────── */
 			.prose hr {
-				border-color: rgba(255, 255, 255, 0.1);
+				border-color: rgba(255,255,255,0.07);
+				margin: 3rem 0;
+			}
+
+			/* ── Callout boxes ──────────────────────────────────────── */
+			.callout {
+				padding: 1.1rem 1.4rem;
+				border-radius: 0.875rem;
+				margin: 2.5rem 0;
+				border: 1px solid;
+				line-height: 1.75;
+			}
+			.callout p { margin-bottom: 0.5rem; }
+			.callout p:last-child { margin-bottom: 0; }
+			.callout strong { display: block; margin-bottom: 0.5rem; font-size: 0.9rem; letter-spacing: 0.04em; text-transform: uppercase; }
+			.callout-tip {
+				background: rgba(124,58,237,0.08);
+				border-color: rgba(124,58,237,0.35);
+				color: #c4b5fd;
+			}
+			.callout-tip strong { color: #a78bfa; }
+			.callout-warning {
+				background: rgba(245,158,11,0.08);
+				border-color: rgba(245,158,11,0.35);
+				color: #fcd34d;
+			}
+			.callout-warning strong { color: #f59e0b; }
+			.callout-info {
+				background: rgba(59,130,246,0.08);
+				border-color: rgba(59,130,246,0.35);
+				color: #93c5fd;
+			}
+			.callout-info strong { color: #60a5fa; }
+			.callout-danger {
+				background: rgba(239,68,68,0.08);
+				border-color: rgba(239,68,68,0.35);
+				color: #fca5a5;
+			}
+			.callout-danger strong { color: #ef4444; }
+
+			/* ── Stat cards ─────────────────────────────────────────── */
+			.stat-row {
+				display: flex;
+				gap: 1rem;
+				margin: 2.5rem 0;
+				flex-wrap: wrap;
+			}
+			.stat-card {
+				flex: 1;
+				min-width: 110px;
+				background: rgba(255,255,255,0.03);
+				border: 1px solid rgba(255,255,255,0.08);
+				border-radius: 1rem;
+				padding: 1.5rem 1rem 1.25rem;
+				text-align: center;
+				transition: border-color 0.2s;
+			}
+			.stat-card:hover { border-color: rgba(124,58,237,0.4); }
+			.stat-value {
+				font-size: 2.75rem;
+				font-weight: 900;
+				line-height: 1;
+				background: linear-gradient(135deg, #a78bfa, #60a5fa);
+				-webkit-background-clip: text;
+				-webkit-text-fill-color: transparent;
+				background-clip: text;
+			}
+			.stat-value.amber {
+				background: linear-gradient(135deg, #fbbf24, #f59e0b);
+				-webkit-background-clip: text;
+				-webkit-text-fill-color: transparent;
+				background-clip: text;
+			}
+			.stat-label {
+				font-size: 0.75rem;
+				color: #64748b;
+				margin-top: 0.5rem;
+				text-transform: uppercase;
+				letter-spacing: 0.08em;
+				line-height: 1.4;
+			}
+
+			/* ── Choice grid ────────────────────────────────────────── */
+			.choice-grid {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 1rem;
+				margin: 2.5rem 0;
+			}
+			@media (max-width: 640px) {
+				.choice-grid { grid-template-columns: 1fr; }
+			}
+			.choice-card {
+				background: rgba(255,255,255,0.03);
+				border: 1px solid rgba(255,255,255,0.08);
+				border-radius: 1rem;
+				padding: 1.4rem 1.25rem;
+			}
+			.choice-card h4 {
+				margin: 0 0 1rem;
+				font-size: 0.95rem;
+				font-weight: 700;
+				color: #e2e8f0;
+			}
+			.choice-card ul {
+				margin: 0;
+				padding-left: 0;
+			}
+			.choice-card.card-blue { border-color: rgba(59,130,246,0.25); }
+			.choice-card.card-blue h4 { color: #93c5fd; }
+			.choice-card.card-amber { border-color: rgba(245,158,11,0.25); }
+			.choice-card.card-amber h4 { color: #fcd34d; }
+			.choice-card.card-violet { border-color: rgba(124,58,237,0.25); }
+			.choice-card.card-violet h4 { color: #a78bfa; }
+
+			/* ── Expert quote highlight ─────────────────────────────── */
+			.expert-quote {
+				display: flex;
+				gap: 1rem;
+				align-items: flex-start;
+				padding: 1.25rem 1.5rem;
+				background: rgba(255,255,255,0.03);
+				border: 1px solid rgba(255,255,255,0.08);
+				border-radius: 1rem;
 				margin: 2rem 0;
 			}
+			.expert-quote .quote-icon {
+				font-size: 2rem;
+				line-height: 1;
+				opacity: 0.4;
+				flex-shrink: 0;
+			}
+			.expert-quote blockquote {
+				border: none;
+				background: none;
+				padding: 0;
+				margin: 0;
+				font-style: italic;
+				color: #94a3b8;
+			}
+			.expert-quote cite {
+				display: block;
+				margin-top: 0.5rem;
+				font-size: 0.8rem;
+				color: #475569;
+				font-style: normal;
+			}
+
+			/* ── Step cards ─────────────────────────────────────────── */
+			.step-card {
+				display: flex;
+				gap: 1.25rem;
+				padding: 1.25rem;
+				background: rgba(255,255,255,0.03);
+				border: 1px solid rgba(255,255,255,0.07);
+				border-radius: 1rem;
+				margin: 1.5rem 0;
+				align-items: flex-start;
+			}
+			.step-number {
+				width: 2rem;
+				height: 2rem;
+				min-width: 2rem;
+				border-radius: 50%;
+				background: linear-gradient(135deg,#7c3aed,#4f46e5);
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font-size: 0.75rem;
+				font-weight: 900;
+				color: #fff;
+				margin-top: 0.1rem;
+			}
+			.step-content { flex: 1; }
+			.step-content strong {
+				display: block;
+				color: #e2e8f0;
+				margin-bottom: 0.4rem;
+			}
+			.step-content p { margin: 0; color: #94a3b8; font-size: 0.9rem; line-height: 1.6; }
 		</style>
 	</head>
 
@@ -126,7 +384,7 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 		<main class="mx-auto max-w-3xl px-6 py-12 sm:px-8">
 			<article>
 				{heroImage && (
-					<div class="mb-8 overflow-hidden rounded-2xl border border-white/10">
+					<div class="mb-10 overflow-hidden rounded-2xl border border-white/10">
 						<Image
 							width={1020}
 							height={510}
@@ -137,7 +395,7 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 					</div>
 				)}
 
-				<header class="mb-8">
+				<header class="mb-10">
 					<div class="mb-3 flex items-center gap-3 text-sm text-slate-500">
 						<FormattedDate date={pubDate} />
 						{updatedDate && (
@@ -153,7 +411,7 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 					{description && (
 						<p class="mt-4 text-lg leading-7 text-slate-400">{description}</p>
 					)}
-					<hr class="mt-6 border-white/10" />
+					<hr class="mt-8 border-white/10" />
 				</header>
 
 				<div class="prose">
@@ -167,5 +425,33 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 		</main>
 		<Footer />
 		<CookieBanner />
+
+		<script>
+			// Wrap pre blocks in notebook-style container
+			const langLabels: Record<string, string> = {
+				python: 'Python', sql: 'SQL', dax: 'DAX', json: 'JSON',
+				powershell: 'PowerShell', bash: 'Shell', ts: 'TypeScript',
+				typescript: 'TypeScript', js: 'JavaScript', javascript: 'JavaScript',
+				css: 'CSS', html: 'HTML', yaml: 'YAML', mdx: 'MDX',
+			};
+
+			document.querySelectorAll<HTMLElement>('.prose pre').forEach((pre) => {
+				const code = pre.querySelector('code');
+				const match = code?.className?.match(/language-(\w+)/);
+				const lang = match?.[1]?.toLowerCase() ?? '';
+				const label = langLabels[lang] || (lang ? lang.toUpperCase() : 'CÓDIGO');
+
+				const wrapper = document.createElement('div');
+				wrapper.className = 'code-notebook';
+
+				const header = document.createElement('div');
+				header.className = 'code-header';
+				header.innerHTML = `<span class="code-dots"><span></span><span></span><span></span></span><span class="code-lang">${label}</span>`;
+
+				pre.parentNode?.insertBefore(wrapper, pre);
+				wrapper.appendChild(header);
+				wrapper.appendChild(pre);
+			});
+		</script>
 	</body>
 </html>

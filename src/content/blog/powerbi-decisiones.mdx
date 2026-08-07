@@ -5,27 +5,51 @@ pubDate: "2026-08-06"
 heroImage: '../../assets/covers/cover-powerbi.svg'
 ---
 
-A lo largo de mi carrera pasando de lo operativo a la dirección, he visto decenas de dashboards técnicamente perfectos que nadie usa. La herramienta (ya sea Power BI, Fabric o Tableau) es secundaria si no entendemos el problema de negocio que hay detrás.
+A lo largo de mi carrera pasando de lo operativo a la dirección, he visto decenas de dashboards técnicamente perfectos que nadie usa. La herramienta (Power BI, Fabric, Tableau) es secundaria si no entendemos el problema de negocio que hay detrás.
+
+---
 
 ## Por qué la mayoría de los dashboards fracasan
 
 El error más común no es técnico: es de diseño de propósito. Un dashboard que intenta responder demasiadas preguntas acaba respondiendo ninguna bien.
 
-Los tres errores más frecuentes que veo en organizaciones:
+<div class="choice-grid">
+  <div class="choice-card card-amber">
+    <h4>Error 1 — Métricas sin contexto</h4>
+    <p style={{color:'#94a3b8',fontSize:'0.9rem',lineHeight:'1.7'}}>Un 73% de satisfacción no significa nada sin saber si el mes pasado era 68% o 80%. El número sin referencia no orienta ninguna decisión.</p>
+  </div>
+  <div class="choice-card card-amber">
+    <h4>Error 2 — Actividad ≠ impacto</h4>
+    <p style={{color:'#94a3b8',fontSize:'0.9rem',lineHeight:'1.7'}}>Muchos reports muestran cuánto se hace (ventas cerradas, tickets) pero no si eso avanza los objetivos reales de negocio.</p>
+  </div>
+</div>
 
-1. **Mostrar métricas sin contexto**: Un 73% de satisfacción no significa nada sin saber si el mes pasado era 68% o 80%. El número sin referencia no orienta ninguna decisión.
+<div class="callout callout-danger">
+  <strong>El error más destructivo</strong>
+  Diseñar para quien construye, no para quien decide. El analista quiere mostrar todo lo que sabe. El directivo necesita responder una pregunta en menos de 30 segundos.
+</div>
 
-2. **Confundir actividad con impacto**: Muchos reports muestran cuánto se hace (ventas cerradas, tickets resueltos) pero no si eso avanza los objetivos de negocio reales.
-
-3. **Diseñar para quien construye, no para quien decide**: El analista quiere mostrar todo lo que sabe. El directivo necesita responder una pregunta en menos de 30 segundos.
+---
 
 ## Diseñando para la acción, no para la vista
 
 Un buen reporte no invita a la contemplación, invita a tomar una decisión. Esto cambia todo el enfoque de diseño.
 
-**Regla 1: Menos es más.** Si un directivo necesita hacer scroll para encontrar el dato que le importa, el dashboard ha fallado. Un máximo de 5-7 KPIs por pantalla es suficiente. El resto, en páginas de detalle para quien quiera profundizar.
+<div class="step-card">
+  <div class="step-number">1</div>
+  <div class="step-content">
+    <strong>Menos es más</strong>
+    <p>Si un directivo necesita hacer scroll para encontrar el dato que le importa, el dashboard ha fallado. Un máximo de 5–7 KPIs por pantalla es suficiente. El resto, en páginas de detalle para quien quiera profundizar.</p>
+  </div>
+</div>
 
-**Regla 2: Contexto sobre el dato aislado.** Siempre muestra comparativas: vs. objetivo, vs. mes anterior, vs. año anterior. En DAX esto se implementa fácilmente:
+<div class="step-card">
+  <div class="step-number">2</div>
+  <div class="step-content">
+    <strong>Contexto sobre el dato aislado</strong>
+    <p>Siempre muestra comparativas: vs. objetivo, vs. mes anterior, vs. año anterior. En DAX esto se implementa así:</p>
+  </div>
+</div>
 
 ```dax
 -- KPI con comparativa vs. mes anterior
@@ -52,9 +76,19 @@ SWITCH(
 )
 ```
 
-**Regla 3: El usuario final manda.** Antes de diseñar cualquier report, pregunta a quien lo va a usar: "¿Qué decisión tomarías con este dato?". Si no tiene respuesta clara, el dato no pertenece al dashboard ejecutivo.
+<div class="step-card">
+  <div class="step-number">3</div>
+  <div class="step-content">
+    <strong>El usuario final manda</strong>
+    <p>Antes de diseñar cualquier report, pregunta a quien lo va a usar: <em>"¿Qué decisión tomarías con este dato?"</em> Si no tiene respuesta clara, el dato no pertenece al dashboard ejecutivo.</p>
+  </div>
+</div>
 
-## La estructura que funciona: el modelo de tres capas de reporte
+---
+
+## La estructura que funciona: el modelo de tres capas
+
+<img src="/charts/dashboard-3-layers.svg" alt="Modelo de tres capas de reporte ejecutivo" style={{width:'100%',marginTop:'1rem',marginBottom:'1.5rem',borderRadius:'0.75rem'}} />
 
 En la práctica, recomiendo estructurar los informes ejecutivos en tres niveles:
 
@@ -75,16 +109,25 @@ Nivel 3 — Datos de soporte (a demanda)
 └── Explicaciones de metodología y definiciones
 ```
 
-La dirección trabaja en el Nivel 1. Los mandos intermedios en el Nivel 2. El equipo analítico tiene acceso al Nivel 3.
+<div class="callout callout-tip">
+  <strong>¿Quién usa cada capa?</strong>
+  La dirección trabaja exclusivamente en el Nivel 1. Los mandos intermedios en el Nivel 2. El equipo analítico tiene acceso al Nivel 3. Diseña para que la navegación entre niveles sea intuitiva con drill-through.
+</div>
+
+---
 
 ## Un ejemplo real: el report que nadie quería usar
 
+<div class="stat-row">
+  <div class="stat-card"><div class="stat-value amber">14</div><div class="stat-label">páginas originales</div></div>
+  <div class="stat-card"><div class="stat-value amber">80+</div><div class="stat-label">métricas</div></div>
+  <div class="stat-card"><div class="stat-value">1</div><div class="stat-label">página final</div></div>
+  <div class="stat-card"><div class="stat-value">6</div><div class="stat-label">KPIs + semáforo</div></div>
+</div>
+
 En un proyecto anterior, teníamos un report de ventas con 14 páginas, 80+ métricas y actualización diaria. Nadie de dirección lo abría.
 
-Rediseñamos con tres principios:
-- Una sola página ejecutiva con 6 KPIs y un gráfico de tendencia
-- Cada KPI con objetivo, valor actual y variación vs. mes anterior
-- Color semáforo automático para que en 10 segundos sepas dónde hay problemas
+Rediseñamos con tres principios: una sola página ejecutiva con 6 KPIs y un gráfico de tendencia, cada KPI con objetivo y variación vs. mes anterior, y color semáforo automático para que en 10 segundos sepas dónde hay problemas.
 
 ```dax
 -- Medida de objetivo dinámico desde tabla de targets
@@ -104,20 +147,27 @@ CALCULATE(
 DIVIDE([Total Ventas], [Objetivo Ventas])
 ```
 
-El resultado: la dirección empezó a revisar el report cada lunes sin que nadie se lo pidiera. El dato correcto, en el formato correcto, para la persona correcta.
+El resultado: la dirección empezó a revisar el report cada lunes sin que nadie se lo pidiera. **El dato correcto, en el formato correcto, para la persona correcta.**
+
+---
 
 ## Recursos para seguir aprendiendo
 
 Estas son mis referencias habituales en diseño de reports ejecutivos con Power BI:
 
-- [Guy in a Cube](https://guyinacube.com) (Adam Saxton y Patrick LeBlanc) — los mejores tutoriales prácticos de Power BI
-- [RADACAD — Reza Rad](https://radacad.com) — arquitectura de soluciones Power BI end-to-end
-- [Nikola Ilic — data-mozart.com](https://data-mozart.com) — DAX avanzado y rendimiento de modelos semánticos
-- [Microsoft Learn: Power BI](https://learn.microsoft.com/es-es/power-bi/) — documentación oficial con ejemplos prácticos
-- [SQLBI — Marco Russo y Alberto Ferrari](https://www.sqlbi.com) — la referencia definitiva en DAX
+- [Guy in a Cube](https://guyinacube.com) — Adam Saxton y Patrick LeBlanc. Los mejores tutoriales prácticos de Power BI.
+- [RADACAD — Reza Rad](https://radacad.com) — Arquitectura de soluciones Power BI end-to-end.
+- [Nikola Ilic — data-mozart.com](https://data-mozart.com) — DAX avanzado y rendimiento de modelos semánticos.
+- [Microsoft Learn: Power BI](https://learn.microsoft.com/es-es/power-bi/) — Documentación oficial con ejemplos prácticos.
+- [SQLBI — Marco Russo y Alberto Ferrari](https://www.sqlbi.com) — La referencia definitiva en DAX.
+
+---
 
 ## Conclusión
 
-El verdadero valor de un analista no está en saber DAX complejo, sino en saber traducir el negocio a datos y los datos a decisiones. Un dashboard que el directivo consulta sin que nadie se lo pida ha alcanzado su objetivo. Uno que se convierte en presentación mensual y acaba en un correo de PDF ha fallado.
+El verdadero valor de un analista no está en saber DAX complejo, sino en saber traducir el negocio a datos y los datos a decisiones.
 
-Diseña para que la decisión sea obvia, no para que el trabajo sea visible.
+<div class="callout callout-tip">
+  <strong>La regla de oro</strong>
+  Un dashboard que el directivo consulta sin que nadie se lo pida ha alcanzado su objetivo. Uno que se convierte en presentación mensual y acaba en un correo de PDF ha fallado. Diseña para que la decisión sea obvia, no para que el trabajo sea visible.
+</div>

@@ -1,0 +1,20 @@
+<svg viewBox="0 0 560 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:560px;display:block">
+  <rect width="560" height="180" fill="rgba(255,255,255,0.02)" rx="14"/>
+  <text x="280" y="20" text-anchor="middle" fill="#64748b" font-size="10.5" font-family="Arial,sans-serif" font-weight="600" letter-spacing="0.1em">DOS SERVIDORES MCP PARA POWER BI — SON DISTINTOS</text>
+  <rect x="20" y="30" width="250" height="135" rx="12" fill="#7c3aed" opacity="0.1"/>
+<rect x="20" y="30" width="250" height="4" rx="2" fill="#a78bfa" opacity="0.8"/>
+<text x="145" y="56" text-anchor="middle" fill="#a78bfa" font-size="10" font-weight="700" font-family="Arial,sans-serif" letter-spacing="0.08em">LOCAL (STDIO)</text>
+<text x="145" y="76" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="700" font-family="Arial,sans-serif">Power BI Modeling MCP</text>
+<text x="145" y="96" text-anchor="middle" fill="#64748b" font-size="9.5" font-family="Arial,sans-serif">Requisitos: Power BI Desktop + VS Code</text>
+<text x="145" y="116" text-anchor="middle" fill="#94a3b8" font-size="9.5" font-family="Arial,sans-serif">Modelo semántico: medidas,</text>
+<text x="145" y="130" text-anchor="middle" fill="#94a3b8" font-size="9.5" font-family="Arial,sans-serif">relaciones, DAX</text>
+<rect x="290" y="30" width="250" height="135" rx="12" fill="#0284c7" opacity="0.1"/>
+<rect x="290" y="30" width="250" height="4" rx="2" fill="#38bdf8" opacity="0.8"/>
+<text x="415" y="56" text-anchor="middle" fill="#38bdf8" font-size="10" font-weight="700" font-family="Arial,sans-serif" letter-spacing="0.08em">CLOUD (HTTP)</text>
+<text x="415" y="76" text-anchor="middle" fill="#e2e8f0" font-size="12" font-weight="700" font-family="Arial,sans-serif">Power BI Remote MCP</text>
+<text x="415" y="96" text-anchor="middle" fill="#64748b" font-size="9.5" font-family="Arial,sans-serif">Requisitos: Fabric F2+ o Premium P1</text>
+<text x="415" y="116" text-anchor="middle" fill="#94a3b8" font-size="9.5" font-family="Arial,sans-serif">Consultar datos del servicio</text>
+<text x="415" y="130" text-anchor="middle" fill="#94a3b8" font-size="9.5" font-family="Arial,sans-serif">publicado</text>
+
+  <text x="280" y="170" text-anchor="middle" fill="#334155" font-size="9" font-family="Arial,sans-serif">Este artículo cubre el servidor Local. No requiere Fabric ni licencia Premium.</text>
+</svg>

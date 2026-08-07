@@ -9,15 +9,22 @@ En Microsoft Fabric coexisten dos paradigmas de almacenamiento que frecuentement
 
 Este artículo te da el mapa completo para decidir cuál usar y cuándo combinarlos.
 
+---
+
 ## El contexto: por qué importa esta decisión en 2026
 
 Microsoft Fabric unificó en 2023 lo que antes eran servicios separados: Azure Synapse Analytics, Power BI, Data Factory y Azure Data Lake Storage Gen2. Todo converge en un único SaaS con un solo almacenamiento subyacente: **OneLake**.
 
-Esto significa que la elección entre Lakehouse y DW ya no es una decisión de infraestructura (ambos usan el mismo Parquet/Delta en OneLake), sino una decisión de **herramienta y flujo de trabajo**.
+<div class="callout callout-info">
+  <strong>La clave que cambia todo</strong>
+  La elección entre Lakehouse y DW ya no es una decisión de infraestructura (ambos usan el mismo Parquet/Delta en OneLake). Es una decisión de <strong>herramienta y flujo de trabajo</strong>.
+</div>
+
+---
 
 ## ¿Qué es el Data Warehouse en Microsoft Fabric?
 
-El Data Warehouse de Fabric es un motor **T-SQL completo**, serverless, optimizado para consultas analíticas. Soporta:
+El Data Warehouse de Fabric es un motor **T-SQL completo**, serverless, optimizado para consultas analíticas:
 
 - Transacciones ACID completas
 - DDL completo: `CREATE TABLE`, `ALTER TABLE`, `DROP TABLE`, particionado
@@ -60,6 +67,8 @@ WHERE v.Estado = 'Validado'
   AND v.ImporteNeto > 0;
 ```
 
+---
+
 ## ¿Qué es el Lakehouse en Microsoft Fabric?
 
 El Lakehouse de Fabric combina la flexibilidad de un data lake con capacidades analíticas SQL. Internamente, todos los datos se guardan en formato **Delta Lake** (tablas Delta) sobre OneLake.
@@ -101,7 +110,11 @@ df_silver.write \
 print(f"Registros procesados: {df_silver.count():,}")
 ```
 
+---
+
 ## Comparativa directa
+
+<img src="/charts/radar-lakehouse-vs-dw.svg" alt="Radar comparativo: Lakehouse vs Data Warehouse en Microsoft Fabric" style={{width:'100%',marginTop:'1rem',marginBottom:'1.5rem',borderRadius:'0.75rem'}} />
 
 | Característica | Lakehouse | Data Warehouse |
 |---|---|---|
@@ -116,25 +129,41 @@ print(f"Registros procesados: {df_silver.count():,}")
 | **Time Travel** | Sí (Delta) | No |
 | **Streaming** | Sí (Spark Streaming) | Limitado |
 
+---
+
 ## ¿Cuándo usar cada uno?
 
-### Elige el **Lakehouse** si:
-- Trabajas con datos no estructurados o semiestructurados (JSON, logs, APIs)
-- Tu equipo domina Python o PySpark
-- Necesitas procesar grandes volúmenes con transformaciones complejas
-- Implementas una arquitectura Medallion (Bronze → Silver → Gold)
-- Necesitas ML o análisis predictivo con los mismos datos
-
-### Elige el **Data Warehouse** si:
-- Tu equipo es principalmente SQL/BI
-- Necesitas que Power BI consuma los datos con DirectLake de alto rendimiento
-- El modelo de datos ya está definido (estrella, copo de nieve)
-- Priorizas consistencia transaccional y operativa sencilla
-- Los datos de entrada ya están limpios y estructurados
+<div class="choice-grid">
+  <div class="choice-card card-blue">
+    <h4>Elige el Lakehouse si...</h4>
+    <ul>
+      <li>Trabajas con datos no estructurados o semiestructurados (JSON, logs, APIs)</li>
+      <li>Tu equipo domina Python o PySpark</li>
+      <li>Necesitas procesar grandes volúmenes con transformaciones complejas</li>
+      <li>Implementas arquitectura Medallion (Bronze → Silver → Gold)</li>
+      <li>Necesitas ML o análisis predictivo con los mismos datos</li>
+    </ul>
+  </div>
+  <div class="choice-card card-amber">
+    <h4>Elige el Data Warehouse si...</h4>
+    <ul>
+      <li>Tu equipo es principalmente SQL/BI</li>
+      <li>Necesitas que Power BI consuma con DirectLake de alto rendimiento</li>
+      <li>El modelo de datos ya está definido (estrella, copo de nieve)</li>
+      <li>Priorizas consistencia transaccional y operación sencilla</li>
+      <li>Los datos de entrada ya están limpios y estructurados</li>
+    </ul>
+  </div>
+</div>
 
 ### El patrón más común: combínalos
 
-En la mayoría de arquitecturas de producción, **Lakehouse para ETL + DW para consumo BI** es el patrón ganador. El Lakehouse procesa y limpia los datos, y el DW expone el modelo a Power BI con el máximo rendimiento.
+<div class="callout callout-tip">
+  <strong>Arquitectura ganadora en producción</strong>
+  <strong>Lakehouse para ETL + DW para consumo BI.</strong> El Lakehouse procesa y limpia los datos; el DW expone el modelo a Power BI con el máximo rendimiento. Microsoft Fabric está diseñado exactamente para facilitar esa integración sin fricción ni movimiento de datos.
+</div>
+
+En el DW puedes crear vistas directamente sobre las tablas Delta del Lakehouse, sin copiar datos:
 
 ```sql
 -- En el DW: crear una vista sobre las tablas Delta del Lakehouse
@@ -153,13 +182,17 @@ GROUP BY
     Canal;
 ```
 
+---
+
 ## Lo que dicen los expertos
 
-[Reza Rad (RADACAD)](https://radacad.com) lleva años documentando la evolución de Fabric y argumenta que el Lakehouse es el corazón de las arquitecturas modernas, mientras que el DW es la capa de presentación optimizada para BI.
+[Reza Rad (RADACAD)](https://radacad.com) argumenta que el Lakehouse es el corazón de las arquitecturas modernas, mientras que el DW es la capa de presentación optimizada para BI.
 
 [Nikola Ilic](https://data-mozart.com) (MVP de Microsoft) recomienda empezar por el Lakehouse para ingeniería de datos y solo pasar al DW cuando el modelo está estable y el equipo BI lo necesita para rendimiento óptimo.
 
 [Chris Webb](https://blog.crossjoin.co.uk) señala que DirectLake sobre Lakehouse está madurando rápidamente y para muchos escenarios puede sustituir al DW con menor complejidad operativa.
+
+---
 
 ## Recursos oficiales de Microsoft
 
@@ -167,8 +200,10 @@ GROUP BY
 - [Microsoft Learn: Lakehouse en Fabric](https://learn.microsoft.com/es-es/fabric/data-engineering/lakehouse-overview)
 - [Comparativa DW vs Lakehouse en Fabric](https://learn.microsoft.com/es-es/fabric/data-engineering/lakehouse-and-warehouse)
 
+---
+
 ## Conclusión
 
-La elección entre Lakehouse y Data Warehouse en Microsoft Fabric no es un debate de tecnología, es un debate de **equipos y flujos de trabajo**. Si tu equipo vive en SQL y Power BI, el DW te da menos fricción. Si tus ingenieros trabajan en Python y Spark, el Lakehouse es su terreno natural.
+La elección entre Lakehouse y Data Warehouse en Microsoft Fabric no es un debate de tecnología, es un debate de **equipos y flujos de trabajo**.
 
-En la práctica, la arquitectura ganadora combina ambos: Lakehouse para la ingeniería, DW para la presentación. Microsoft Fabric está diseñado exactamente para facilitar esa integración sin fricciones ni movimiento de datos.
+Si tu equipo vive en SQL y Power BI, el DW te da menos fricción. Si tus ingenieros trabajan en Python y Spark, el Lakehouse es su terreno natural. En la práctica, la arquitectura ganadora combina ambos: Lakehouse para la ingeniería, DW para la presentación.

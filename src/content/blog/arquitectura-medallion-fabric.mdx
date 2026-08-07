@@ -7,6 +7,8 @@ heroImage: '../../assets/covers/cover-medallion.svg'
 
 La **Arquitectura Medallion** se ha convertido en el estándar de facto para construir plataformas de datos modernas. En Microsoft Fabric, donde Lakehouse, Spark y Power BI conviven en el mismo ecosistema, aplicar Medallion correctamente marca la diferencia entre un proyecto de datos que escala y uno que se convierte en deuda técnica.
 
+---
+
 ## ¿Por qué Medallion es el estándar?
 
 La arquitectura Medallion (propuesta originalmente por Databricks y adoptada en el ecosistema Azure/Fabric) divide el pipeline de datos en **tres zonas de calidad progresiva**:
@@ -63,17 +65,37 @@ La arquitectura Medallion (propuesta originalmente por Databricks y adoptada en 
 </svg>
 </div>
 
-El principio fundamental es simple: **nunca modifiques los datos de origen**. Cada capa añade calidad sin destruir la anterior, lo que permite auditoría, rollback y reprocesamiento sin perder el dato original.
+<div class="callout callout-tip">
+  <strong>El principio fundamental</strong>
+  Nunca modifiques los datos de origen. Cada capa añade calidad sin destruir la anterior, lo que permite auditoría, rollback y reprocesamiento sin perder el dato original.
+</div>
+
+---
 
 ## Capa Bronze: Los datos tal como llegan
 
 La capa Bronze es tu **zona de aterrizaje (landing zone)**. Los datos llegan exactamente como los recibes de los sistemas fuente, sin transformaciones de negocio.
 
-Principios clave:
-- **Inmutabilidad**: los archivos raw no se modifican nunca
-- **Particionado por fecha de ingesta** (no por fecha del negocio)
-- **No inferir tipos**: en Bronze todo es string o se preserva tal cual
-- **Metadata de trazabilidad**: siempre añade `_ingestion_ts`, `_source_file`, `_batch_id`
+<div class="choice-grid">
+  <div class="choice-card card-amber">
+    <h4>Principios de Bronze</h4>
+    <ul>
+      <li><strong>Inmutabilidad:</strong> los archivos raw no se modifican nunca</li>
+      <li><strong>Particionado por fecha de ingesta</strong> (no por fecha del negocio)</li>
+      <li><strong>No inferir tipos:</strong> en Bronze todo es string</li>
+      <li><strong>Metadata de trazabilidad:</strong> _ingestion_ts, _source_file, _batch_id</li>
+    </ul>
+  </div>
+  <div class="choice-card card-violet">
+    <h4>Lo que NO va en Bronze</h4>
+    <ul>
+      <li>Conversiones de tipos de negocio</li>
+      <li>Validaciones de reglas de negocio</li>
+      <li>Deduplicación basada en lógica de negocio</li>
+      <li>Joins o enriquecimientos con otras fuentes</li>
+    </ul>
+  </div>
+</div>
 
 ```python
 from pyspark.sql import SparkSession
@@ -109,11 +131,13 @@ df_bronze.write \
 print(f"Bronze OK: {df_bronze.count():,} registros [Batch: {BATCH_ID}]")
 ```
 
+---
+
 ## Capa Silver: Datos de confianza
 
 La capa Silver es donde ocurre la mayor parte del trabajo de ingeniería. Aquí transformamos datos raw en datos **limpios, tipados y confiables**.
 
-Transformaciones típicas:
+Transformaciones típicas en Silver:
 - Conversión de tipos (strings a fechas, enteros, decimales)
 - Deduplicación con lógica de ventana
 - Validación de reglas de negocio con audit trail de rechazados
@@ -177,6 +201,8 @@ print(f"Silver OK:     {df_valid.count():,} registros")
 print(f"Rechazados:    {df_invalid.count():,} en audit trail")
 ```
 
+---
+
 ## Capa Gold: El modelo de negocio
 
 La capa Gold está diseñada para el **consumo final**: Power BI, APIs de negocio, modelos de ML. Los datos hablan el lenguaje del negocio, no el de los sistemas fuente.
@@ -222,9 +248,11 @@ spark.sql("""
 print("Gold OK: Modelo dimensional actualizado")
 ```
 
+---
+
 ## Mejores prácticas que marcan la diferencia
 
-### 1. Nomenclatura consistente entre capas
+### Nomenclatura consistente entre capas
 
 ```
 lh_bronze_{dominio}   → lh_bronze_ventas, lh_bronze_rrhh
@@ -234,7 +262,7 @@ nb_{capa}_{acción}    → nb_silver_transform_ventas
 df_{fuente}_{acción}  → df_erp_ingest_ventas
 ```
 
-### 2. Observabilidad desde el primer día
+### Observabilidad desde el primer día
 
 ```python
 import json
@@ -257,10 +285,10 @@ def log_step(layer: str, table: str, records: int,
 # Uso
 log_step("silver", "fact_ventas", 150_000, "success")
 log_step("silver", "ventas_rechazadas", 42, "warning",
-         "42 registros con fecha inválida")
+         "42 registros con fecha invalida")
 ```
 
-### 3. Validaciones de calidad antes de escribir en cada capa
+### Validaciones de calidad antes de escribir en cada capa
 
 ```python
 def validate_silver(df) -> None:
@@ -282,24 +310,26 @@ def validate_silver(df) -> None:
     print(f"Todas las validaciones OK ({total:,} registros)")
 ```
 
-### 4. ¿Cuándo usar dos capas en vez de tres?
+### ¿Cuándo usar dos capas en vez de tres?
 
-Para proyectos pequeños o equipos de análisis sin ingeniería de datos, dos capas pueden ser suficientes:
-- **Raw → Analytic**: Raw = Bronze directo, Analytic = Silver+Gold combinados
-- Útil cuando el volumen es bajo y el modelo de datos es estable
-- Menos overhead de mantenimiento
+<div class="callout callout-info">
+  <strong>Para proyectos pequeños</strong>
+  Para proyectos pequeños o equipos sin ingeniería de datos, dos capas pueden ser suficientes: <strong>Raw → Analytic</strong> (Raw = Bronze directo, Analytic = Silver+Gold combinados). Menos overhead, misma lógica. La complejidad de Medallion debe justificarse por el volumen y la complejidad del dato.
+</div>
 
-Nikola Ilic habla de esto en detalle: la complejidad de Medallion debe justificarse por el volumen y la complejidad del dato.
+---
 
 ## Lo que dicen los expertos
 
-**Nikola Ilic** ([data-mozart.com](https://data-mozart.com)) es quizás la referencia más citada en Medallion + Fabric. Su serie sobre Medallion Architecture en Microsoft Fabric es imprescindible, especialmente su análisis sobre cuándo dos capas son suficientes y cuándo tres son necesarias.
+**Nikola Ilic** ([data-mozart.com](https://data-mozart.com)) es quizás la referencia más citada en Medallion + Fabric. Su serie sobre cuándo dos capas son suficientes y cuándo tres son necesarias es imprescindible.
 
-**Reza Rad** ([RADACAD](https://radacad.com)) lleva años documentando patrones de Lakehouse. Su enfoque sobre cómo gestionar el ciclo de vida de los datos (retención por capa, particionado, Z-ordering en Delta) es especialmente valioso.
+**Reza Rad** ([RADACAD](https://radacad.com)) lleva años documentando patrones de Lakehouse, especialmente sobre ciclo de vida de los datos: retención por capa, particionado y Z-ordering en Delta.
 
 **Chris Webb** ([blog.crossjoin.co.uk](https://blog.crossjoin.co.uk)) aporta la perspectiva de cómo Medallion impacta en el rendimiento de DirectLake en Power BI: la estructura de las tablas Gold determina directamente la velocidad de los reports.
 
 **Marc Lelijveld** ([marclelijveld.com](https://marclelijveld.com)) tiene contenido excelente sobre Fabric Deployment Pipelines para gestionar Medallion en entornos dev/test/prod con CI/CD.
+
+---
 
 ## Recursos de Microsoft
 
@@ -308,8 +338,15 @@ Nikola Ilic habla de esto en detalle: la complejidad de Medallion debe justifica
 - [Tutorial end-to-end: Medallion Lakehouse](https://learn.microsoft.com/es-es/fabric/data-engineering/tutorial-lakehouse-introduction)
 - [Lakehouse Best Practices](https://learn.microsoft.com/es-es/fabric/data-engineering/lakehouse-best-practices)
 
+---
+
 ## Conclusión
 
-La arquitectura Medallion no es complejidad por el gusto de la complejidad. Es una solución pragmática a un problema real: los datos de negocio son sucios, incompletos y cambian constantemente. Con Bronze, Silver y Gold defines zonas claras de responsabilidad, permites el reprocesamiento sin pérdida de datos y generas confianza en los consumidores del dato.
+La arquitectura Medallion no es complejidad por el gusto de la complejidad. Es una solución pragmática a un problema real: los datos de negocio son sucios, incompletos y cambian constantemente.
 
-En Microsoft Fabric, donde Spark, SQL y Power BI viven en el mismo ecosistema, Medallion se implementa de forma natural con los Lakehouses. El código de este artículo es el punto de partida; la clave es adaptarlo al volumen, los equipos y el dominio de tu organización.
+<div class="callout callout-tip">
+  <strong>El punto de partida</strong>
+  Con Bronze, Silver y Gold defines zonas claras de responsabilidad, permites el reprocesamiento sin pérdida de datos y generas confianza en los consumidores del dato. El código de este artículo es el punto de partida; la clave es adaptarlo al volumen, los equipos y el dominio de tu organización.
+</div>
+
+En Microsoft Fabric, donde Spark, SQL y Power BI viven en el mismo ecosistema, Medallion se implementa de forma natural con los Lakehouses.

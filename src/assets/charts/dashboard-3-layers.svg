@@ -1,0 +1,19 @@
+<svg viewBox="0 0 580 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:580px;display:block">
+  <rect width="580" height="200" fill="rgba(255,255,255,0.02)" rx="14"/>
+  <text x="290" y="18" text-anchor="middle" fill="#64748b" font-size="11" font-family="Arial,sans-serif" font-weight="600" letter-spacing="0.1em">MODELO DE TRES CAPAS DE REPORTE</text>
+  <rect x="20" y="20" width="540" height="48" rx="10" fill="#7c3aed" opacity="0.15"/>
+<rect x="20" y="20" width="6" height="48" rx="3" fill="#a78bfa" opacity="0.8"/>
+<rect x="20" y="76" width="540" height="48" rx="10" fill="#1d4ed8" opacity="0.15"/>
+<rect x="20" y="76" width="6" height="48" rx="3" fill="#60a5fa" opacity="0.8"/>
+<rect x="20" y="132" width="540" height="48" rx="10" fill="#065f46" opacity="0.15"/>
+<rect x="20" y="132" width="6" height="48" rx="3" fill="#34d399" opacity="0.8"/>
+
+  <text x="42" y="38" fill="#a78bfa" font-size="11" font-weight="700" font-family="Arial,sans-serif">NIVEL 1 — Dirección</text>
+<text x="42" y="54" fill="#94a3b8" font-size="10" font-family="Arial,sans-serif">1 página · 6 KPIs · Semáforo · Tendencia</text>
+<text x="42" y="94" fill="#60a5fa" font-size="11" font-weight="700" font-family="Arial,sans-serif">NIVEL 2 — Mandos intermedios</text>
+<text x="42" y="110" fill="#94a3b8" font-size="10" font-family="Arial,sans-serif">2–3 páginas · Desglose · Rankings · Drill-through</text>
+<text x="42" y="150" fill="#34d399" font-size="11" font-weight="700" font-family="Arial,sans-serif">NIVEL 3 — Equipo analítico</text>
+<text x="42" y="166" fill="#94a3b8" font-size="10" font-family="Arial,sans-serif">Tablas detalladas · Transacciones · Metodología</text>
+
+  <text x="290" y="190" text-anchor="middle" fill="#334155" font-size="9.5" font-family="Arial,sans-serif">La dirección opera en Nivel 1. El equipo analítico accede a todos los niveles.</text>
+</svg>
