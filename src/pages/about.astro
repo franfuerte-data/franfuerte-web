@@ -1,8 +1,12 @@
 ---
+import { Image } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import profileImage from '../images/profile.webp';
+import CertificationBadges from '../components/CertificationBadges.astro';
+import profileImage from '../images/mariobross.jpg';
+import eventoComunidad from '../images/evento9.jpg';
+import collageCharlas from '../images/charlas5.jpg';
 ---
 
 <Layout
@@ -141,12 +145,58 @@ import profileImage from '../images/profile.webp';
 					<p class="leading-8 text-slate-300">
 						Soy <strong class="text-white">Data Analytics Manager en Avanade</strong>. Trabajo con Microsoft Fabric, Power BI y Azure para ayudar a organizaciones a convertir sus datos en decisiones. En 2024 me nombraron <strong class="text-white">Power BI Champion</strong> y en 2025 <strong class="text-white">Microsoft Fabric Champion</strong>.
 					</p>
+
+					<!-- Community image + Málaga User Group -->
+					<div class="my-8 overflow-hidden rounded-2xl border border-white/10 shadow-[0_20px_60px_-20px_rgba(124,58,237,0.35)]">
+						<Image
+							src={eventoComunidad}
+							alt="Fran Fuerte en un evento de la comunidad técnica de datos junto a otros profesionales"
+							widths={[400, 800, 1200]}
+							sizes="(max-width: 768px) 100vw, 768px"
+							class="h-auto w-full object-cover"
+							loading="lazy"
+							decoding="async"
+						/>
+					</div>
+
 					<p class="leading-8 text-slate-300">
 						Pero más allá de los títulos: en enero de 2022 co-fundé el <strong class="text-white">Fabric &amp; Power BI Málaga User Group</strong>, porque creo que la comunidad de datos en español merece más y mejor contenido técnico. Seguimos activos, seguimos creciendo.
 					</p>
 					<p class="leading-8 text-slate-300">
 						Este blog es parte de eso. Artículos técnicos reales, en español, sin relleno. Sobre lo que funciona y lo que no en Fabric, Power BI y arquitecturas de datos modernas.
 					</p>
+				</section>
+
+				<!-- Speaker & Divulgación -->
+				<section>
+					<div class="rounded-2xl border border-cyan-500/20 bg-gradient-to-br from-cyan-950/30 via-slate-950/40 to-violet-950/30 p-6 sm:p-8">
+						<div class="mb-2 flex items-center gap-2">
+							<span class="inline-flex h-2 w-2 animate-pulse rounded-full bg-cyan-400"></span>
+							<p class="text-xs font-semibold uppercase tracking-[0.3em] text-cyan-300">Speaker &amp; divulgación</p>
+						</div>
+						<h2 class="text-2xl font-black tracking-tight text-white sm:text-3xl">
+							Compartiendo conocimiento en el barro.
+						</h2>
+						<p class="mt-4 leading-7 text-slate-300">
+							Más de <strong class="text-cyan-200">X ponencias y formaciones</strong> ayudando a profesionales a dominar el ecosistema de datos de Microsoft: Fabric, Power BI, arquitecturas Lakehouse y ahora integración de LLMs vía MCP.
+						</p>
+
+						<div class="mt-6 overflow-hidden rounded-xl border border-white/10">
+							<Image
+								src={collageCharlas}
+								alt="Collage de Fran Fuerte dando ponencias y conferencias sobre Power BI y Microsoft Fabric"
+								widths={[600, 1000, 1400]}
+								sizes="(max-width: 1024px) 100vw, 900px"
+								class="h-auto w-full object-cover"
+								loading="lazy"
+								decoding="async"
+							/>
+						</div>
+
+						<p class="mt-4 text-xs text-slate-500">
+							Comunidad técnica española · Meetups del User Group · Formaciones internas en Avanade · Colaboraciones con Microsoft
+						</p>
+					</div>
 				</section>
 
 				<!-- Skills grid -->
@@ -171,6 +221,28 @@ import profileImage from '../images/profile.webp';
 					</div>
 				</section>
 
+				<!-- Certifications wall -->
+				<section>
+					<div class="mb-6 flex items-center justify-between gap-3">
+						<div>
+							<p class="text-xs font-semibold uppercase tracking-[0.3em] text-cyan-300">Credenciales oficiales</p>
+							<h2 class="mt-2 text-2xl font-black tracking-tight text-white">Certificaciones Microsoft</h2>
+						</div>
+						<a
+							href="https://learn.microsoft.com/es-es/users/franfuerte/credentials"
+							target="_blank"
+							rel="noreferrer"
+							class="hidden text-sm font-semibold text-slate-400 transition hover:text-white sm:inline"
+						>
+							Ver en Microsoft Learn →
+						</a>
+					</div>
+					<CertificationBadges variant="wall" />
+					<p class="mt-4 text-xs text-slate-500">
+						Certificaciones verificables en Microsoft Learn. Enfoque en el ecosistema Fabric, Power BI y Azure Data.
+					</p>
+				</section>
+
 				<!-- CTA -->
 				<section class="rounded-2xl border border-violet-500/20 bg-gradient-to-br from-violet-950/60 to-indigo-950/60 p-8">
 					<h2 class="text-xl font-black tracking-tight text-white">¿Hablamos?</h2>
@@ -190,7 +262,7 @@ import profileImage from '../images/profile.webp';
 							LinkedIn
 						</a>
 						<a
-							href="mailto:fran.fuerte.grund@avanade.com"
+							href="mailto:fran.fuerte.grund@outlook.es"
 							class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-5 py-2.5 text-sm font-semibold text-slate-100 transition hover:bg-white/10"
 						>
 							Correo directo

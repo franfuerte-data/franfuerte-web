@@ -54,7 +54,7 @@
 			class="hidden w-full max-w-md rounded-2xl border border-red-500/30 bg-red-500/10 px-6 py-4 text-sm text-red-300"
 		>
 			<p class="font-semibold">Algo no ha ido bien.</p>
-			<p class="mt-1 text-red-400/80">Inténtalo de nuevo o escríbeme a <a href="mailto:fran.fuerte.grund@avanade.com" class="underline">fran.fuerte.grund@avanade.com</a>.</p>
+			<p class="mt-1 text-red-400/80">Inténtalo de nuevo o escríbeme a <a href="mailto:fran.fuerte.grund@outlook.es" class="underline">fran.fuerte.grund@outlook.es</a>.</p>
 		</div>
 	</div>
 
@@ -85,13 +85,17 @@
 			}
 
 			try {
-				const res = await fetch('https://formsubmit.co/ajax/fran.fuerte.grund@outlook.com', {
+				const res = await fetch('https://formsubmit.co/ajax/fran.fuerte.grund@outlook.es', {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
 					body: JSON.stringify({
 						email: emailInput.value,
 						_subject: 'Nueva suscripción al newsletter — franfuerte.dev',
+						_cc: 'fran.fuerte.grund@outlook.es',
 						_captcha: 'false',
+						_template: 'table',
+						fecha_suscripcion: new Date().toISOString(),
+						origen: 'franfuerte.dev — newsletter',
 					}),
 				});
 

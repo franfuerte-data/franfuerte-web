@@ -7,7 +7,15 @@ import { defineConfig, fontProviders } from 'astro/config';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://franfuerte.dev',
-  integrations: [mdx(), sitemap()],
+  trailingSlash: 'always',
+  build: {
+    format: 'directory',
+  },
+  integrations: [mdx(), sitemap({
+    changefreq: 'weekly',
+    priority: 0.8,
+    lastmod: new Date(),
+  })],
 
   fonts: [
       {

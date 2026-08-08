@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+Disallow: /_astro/
+Disallow: /_image
+
+# Sitemaps
+Sitemap: https://franfuerte.dev/sitemap-index.xml
+
+# Preferred crawlers
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /

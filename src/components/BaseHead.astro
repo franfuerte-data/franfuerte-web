@@ -2,7 +2,7 @@
 import '../styles/global.css';
 import type { ImageMetadata } from 'astro';
 import FallbackImage from '../assets/blog-placeholder-1.jpg';
-import { SITE_TITLE, SITE_AUTHOR, TWITTER_HANDLE } from '../consts';
+import { SITE_TITLE, SITE_AUTHOR, SITE_URL, SITE_KEYWORDS, TWITTER_HANDLE } from '../consts';
 import { Font } from 'astro:assets';
 
 interface Props {
@@ -12,9 +12,68 @@ interface Props {
 	article?: boolean;
 }
 
-const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+// Ensure trailing slash on canonical to match trailingSlash: 'always' config
+const pathname = Astro.url.pathname.endsWith('/') ? Astro.url.pathname : Astro.url.pathname + '/';
+const canonicalURL = new URL(pathname, Astro.site);
 
 const { title, description, image = FallbackImage, article = false } = Astro.props;
+
+// JSON-LD structured data
+const personSchema = {
+	'@context': 'https://schema.org',
+	'@type': 'Person',
+	name: 'Fran Fuerte',
+	alternateName: 'franfuerte',
+	url: SITE_URL,
+	image: new URL(image.src, Astro.url).toString(),
+	jobTitle: 'Data Analytics Manager · Data Architect · AI Engineer',
+	worksFor: { '@type': 'Organization', name: 'Avanade' },
+	sameAs: [
+		'https://www.linkedin.com/in/franfuertegrund/',
+		'https://learn.microsoft.com/es-es/users/franfuerte/credentials',
+	],
+	knowsAbout: [
+		'Microsoft Fabric', 'Power BI', 'Data Architecture', 'AI Engineering',
+		'Forward Deployed Engineering', 'Analytics Engineering',
+		'Lakehouse', 'Data Warehouse', 'Delta Lake', 'OneLake',
+		'DAX', 'PySpark', 'Model Context Protocol', 'LLMs',
+	],
+	hasCredential: [
+		{ '@type': 'EducationalOccupationalCredential', name: 'DP-700 Fabric Data Engineer Associate', credentialCategory: 'certification', recognizedBy: { '@type': 'Organization', name: 'Microsoft' } },
+		{ '@type': 'EducationalOccupationalCredential', name: 'DP-600 Fabric Analytics Engineer Associate', credentialCategory: 'certification', recognizedBy: { '@type': 'Organization', name: 'Microsoft' } },
+		{ '@type': 'EducationalOccupationalCredential', name: 'DP-500 Azure Enterprise Data Analyst', credentialCategory: 'certification', recognizedBy: { '@type': 'Organization', name: 'Microsoft' } },
+		{ '@type': 'EducationalOccupationalCredential', name: 'DP-203 Data Engineering on Azure', credentialCategory: 'certification', recognizedBy: { '@type': 'Organization', name: 'Microsoft' } },
+		{ '@type': 'EducationalOccupationalCredential', name: 'PL-300 Power BI Data Analyst', credentialCategory: 'certification', recognizedBy: { '@type': 'Organization', name: 'Microsoft' } },
+	],
+	award: ['Microsoft Fabric Champion 2025', 'Power BI Champion 2024', 'Talent Pool Opplus 2019'],
+};
+
+const websiteSchema = {
+	'@context': 'https://schema.org',
+	'@type': 'WebSite',
+	name: SITE_TITLE,
+	url: SITE_URL,
+	description,
+	inLanguage: 'es-ES',
+	author: { '@type': 'Person', name: 'Fran Fuerte', url: SITE_URL },
+	potentialAction: {
+		'@type': 'SearchAction',
+		target: `${SITE_URL}/blog/?q={search_term_string}`,
+		'query-input': 'required name=search_term_string',
+	},
+};
+
+const articleSchema = article ? {
+	'@context': 'https://schema.org',
+	'@type': 'TechArticle',
+	headline: title,
+	description,
+	image: new URL(image.src, Astro.url).toString(),
+	author: { '@type': 'Person', name: 'Fran Fuerte', url: SITE_URL },
+	publisher: { '@type': 'Person', name: 'Fran Fuerte', url: SITE_URL },
+	mainEntityOfPage: canonicalURL.toString(),
+	inLanguage: 'es-ES',
+} : null;
 ---
 
 <!-- Global Metadata -->
@@ -33,20 +92,24 @@ const { title, description, image = FallbackImage, article = false } = Astro.pro
 
 <Font cssVariable="--font-atkinson" preload />
 
-<!-- Canonical URL -->
+<!-- Canonical URL (con trailing slash consistente) -->
 <link rel="canonical" href={canonicalURL} />
 
 <!-- Primary Meta Tags -->
 <title>{title}</title>
 <meta name="description" content={description} />
 <meta name="author" content={SITE_AUTHOR} />
-<meta name="robots" content="index, follow" />
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+<meta name="googlebot" content="index, follow, max-image-preview:large" />
 <meta name="language" content="Spanish" />
-<meta name="keywords" content="Microsoft Fabric, Power BI, Data Engineering, Data Warehouse, Lakehouse, Arquitectura Medallion, DAX, PySpark, OneLake, Data Analytics" />
+<meta http-equiv="content-language" content="es-ES" />
+<meta name="geo.region" content="ES-AN" />
+<meta name="geo.placename" content="Málaga" />
+<meta name="keywords" content={SITE_KEYWORDS} />
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content={article ? 'article' : 'website'} />
-<meta property="og:url" content={Astro.url} />
+<meta property="og:url" content={canonicalURL} />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
 <meta property="og:image" content={new URL(image.src, Astro.url)} />
@@ -62,3 +125,8 @@ const { title, description, image = FallbackImage, article = false } = Astro.pro
 <meta name="twitter:title" content={title} />
 <meta name="twitter:description" content={description} />
 <meta name="twitter:image" content={new URL(image.src, Astro.url)} />
+
+<!-- JSON-LD Structured Data -->
+<script type="application/ld+json" set:html={JSON.stringify(personSchema)} />
+<script type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
+{articleSchema && <script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />}

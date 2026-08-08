@@ -1,0 +1,122 @@
+---
+export interface Props {
+  variant?: 'inline' | 'wall';
+  limit?: number;
+}
+
+const { variant = 'inline', limit } = Astro.props;
+
+const certs = [
+  {
+    code: 'DP-700',
+    name: 'Fabric Data Engineer Associate',
+    color: 'from-cyan-500/20 to-teal-500/10',
+    border: 'border-cyan-500/30',
+    text: 'text-cyan-300',
+    year: '2025',
+    url: 'https://learn.microsoft.com/en-us/credentials/certifications/fabric-data-engineer-associate/',
+  },
+  {
+    code: 'DP-600',
+    name: 'Fabric Analytics Engineer Associate',
+    color: 'from-violet-500/20 to-indigo-500/10',
+    border: 'border-violet-500/30',
+    text: 'text-violet-300',
+    year: '2024',
+    url: 'https://learn.microsoft.com/en-us/credentials/certifications/fabric-analytics-engineer-associate/',
+  },
+  {
+    code: 'DP-500',
+    name: 'Azure Enterprise Data Analyst Associate',
+    color: 'from-indigo-500/20 to-blue-500/10',
+    border: 'border-indigo-500/30',
+    text: 'text-indigo-300',
+    year: '2024',
+    url: 'https://learn.microsoft.com/en-us/credentials/certifications/azure-enterprise-data-analyst-associate/',
+  },
+  {
+    code: 'DP-203',
+    name: 'Data Engineering on Microsoft Azure',
+    color: 'from-blue-500/20 to-sky-500/10',
+    border: 'border-blue-500/30',
+    text: 'text-sky-300',
+    year: '2023',
+    url: 'https://learn.microsoft.com/en-us/credentials/certifications/azure-data-engineer/',
+  },
+  {
+    code: 'PL-300',
+    name: 'Power BI Data Analyst Associate',
+    color: 'from-amber-500/20 to-yellow-500/10',
+    border: 'border-amber-500/30',
+    text: 'text-amber-300',
+    year: '2023',
+    url: 'https://learn.microsoft.com/en-us/credentials/certifications/data-analyst-associate/',
+  },
+];
+
+const displayed = limit ? certs.slice(0, limit) : certs;
+const credlyProfile = 'https://learn.microsoft.com/es-es/users/franfuerte/credentials';
+---
+
+{variant === 'inline' && (
+  <div class="flex flex-col gap-3">
+    <p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">
+      Certificaciones oficiales de Microsoft
+    </p>
+    <div class="flex flex-wrap items-center gap-2">
+      {displayed.map((cert) => (
+        <a
+          href={cert.url}
+          target="_blank"
+          rel="noreferrer"
+          class={`group inline-flex items-center gap-2 rounded-full border ${cert.border} bg-gradient-to-r ${cert.color} px-3 py-1.5 text-xs font-semibold transition hover:scale-[1.03]`}
+          title={cert.name}
+        >
+          <span class={`${cert.text}`}>{cert.code}</span>
+        </a>
+      ))}
+      <a
+        href={credlyProfile}
+        target="_blank"
+        rel="noreferrer"
+        class="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-300 transition hover:border-white/20 hover:text-white"
+      >
+        Ver perfil Microsoft Learn →
+      </a>
+    </div>
+  </div>
+)}
+
+{variant === 'wall' && (
+  <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    {displayed.map((cert) => (
+      <a
+        href={cert.url}
+        target="_blank"
+        rel="noreferrer"
+        class={`group flex flex-col gap-3 rounded-2xl border ${cert.border} bg-gradient-to-br ${cert.color} p-5 transition hover:scale-[1.02] hover:shadow-lg hover:shadow-violet-500/10`}
+      >
+        <div class="flex items-start justify-between">
+          <div class="flex items-center justify-center">
+            <div class={`inline-flex h-14 w-14 items-center justify-center rounded-xl ${cert.border} border-2 bg-black/40`}>
+              <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2L4 6V10.5C4 15.5 7.42 20.19 12 22C16.58 20.19 20 15.5 20 10.5V6L12 2Z" stroke="currentColor" stroke-width="1.5" class={cert.text} fill="currentColor" fill-opacity="0.1"/>
+                <path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class={cert.text}/>
+              </svg>
+            </div>
+          </div>
+          <span class={`rounded-full ${cert.border} border bg-black/30 px-2.5 py-0.5 text-[10px] font-bold ${cert.text}`}>
+            {cert.year}
+          </span>
+        </div>
+        <div>
+          <p class={`text-lg font-black ${cert.text}`}>{cert.code}</p>
+          <p class="mt-1 text-sm leading-6 text-slate-300">{cert.name}</p>
+        </div>
+        <p class="mt-auto text-[11px] font-medium uppercase tracking-[0.15em] text-slate-500 group-hover:text-slate-400">
+          Microsoft Certified →
+        </p>
+      </a>
+    ))}
+  </div>
+)}

@@ -1,0 +1,400 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+// Pega aquí tu link de Cal.com o Calendly cuando lo tengas
+// Ejemplos: 'https://cal.com/franfuerte/30min' o 'https://calendly.com/franfuerte/estrategia'
+const SCHEDULING_URL = '';
+---
+
+<Layout
+	title="Contacto — Fran Fuerte | Asesoría, Governance y Auditorías Fabric / Power BI"
+	description="Asesoría, auditorías de governance y mentorías en Microsoft Fabric y Power BI. Resolución de dudas técnicas complejas (DAX, PySpark, MCP, arquitectura). Agenda una llamada sin compromiso."
+>
+	<Header />
+
+	<div class="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(124,58,237,0.22),_transparent_35%),radial-gradient(circle_at_top_right,_rgba(6,182,212,0.16),_transparent_35%)]">
+		<main class="mx-auto max-w-4xl px-6 py-12 sm:px-8">
+
+			<!-- Hero -->
+			<header class="mb-10">
+				<p class="mb-3 text-xs font-semibold uppercase tracking-[0.28em] text-cyan-300">
+					Asesoría · Governance · Auditorías
+				</p>
+				<h1 class="text-4xl font-black leading-tight tracking-tight text-white sm:text-5xl">
+					¿Atascado con Fabric o Power BI?<br/>
+					<span class="bg-gradient-to-r from-violet-300 to-cyan-300 bg-clip-text text-transparent">
+						Vamos a desatascarlo.
+					</span>
+				</h1>
+				<p class="mt-5 max-w-2xl text-lg leading-8 text-slate-300">
+					Ayudo a equipos técnicos y de negocio a poner orden en su <strong class="text-violet-200">governance de Power BI y Microsoft Fabric</strong>, auditar arquitecturas existentes y resolver dudas técnicas concretas de DAX, PySpark, modelado semántico o integración con IA (MCP).
+				</p>
+				<p class="mt-3 max-w-2xl text-sm leading-7 text-slate-400">
+					<strong class="text-slate-300">Formato:</strong> asesoría por horas, mentorías, sesiones puntuales o auditorías. <strong class="text-slate-300">Lo que no hago:</strong> gestión completa de proyectos de implantación — para eso mi equipo en Avanade es tu mejor camino.
+				</p>
+			</header>
+
+			<!-- Servicios disponibles -->
+			<section class="mb-12">
+				<div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+					<div class="rounded-xl border border-violet-500/20 bg-gradient-to-br from-violet-950/30 to-slate-950/20 p-4">
+						<div class="mb-2 inline-flex h-8 w-8 items-center justify-center rounded-lg bg-violet-500/15 text-violet-300">
+							<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L4 6v6c0 5 3.5 9 8 10 4.5-1 8-5 8-10V6l-8-4z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+						</div>
+						<p class="text-sm font-semibold text-white">Governance Power BI / Fabric</p>
+						<p class="mt-1 text-xs leading-5 text-slate-400">OneLake Catalog, workspaces, endorsements, RLS, políticas de sensibilidad.</p>
+					</div>
+					<div class="rounded-xl border border-cyan-500/20 bg-gradient-to-br from-cyan-950/30 to-slate-950/20 p-4">
+						<div class="mb-2 inline-flex h-8 w-8 items-center justify-center rounded-lg bg-cyan-500/15 text-cyan-300">
+							<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 3H4a1 1 0 00-1 1v6M14 3h6a1 1 0 011 1v6M14 21h6a1 1 0 001-1v-6M10 21H4a1 1 0 01-1-1v-6M9 9h6v6H9z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+						</div>
+						<p class="text-sm font-semibold text-white">Auditoría de arquitectura</p>
+						<p class="mt-1 text-xs leading-5 text-slate-400">Revisión del modelo Medallion, Lakehouse vs DW, DirectLake, rendimiento y costes.</p>
+					</div>
+					<div class="rounded-xl border border-amber-500/20 bg-gradient-to-br from-amber-950/30 to-slate-950/20 p-4">
+						<div class="mb-2 inline-flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500/15 text-amber-300">
+							<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 20l9-16H3l9 16zm0-4l-4-7h8l-4 7z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+						</div>
+						<p class="text-sm font-semibold text-white">Mentorías 1-a-1</p>
+						<p class="mt-1 text-xs leading-5 text-slate-400">Plan personalizado en DAX, PySpark, Fabric, arquitectura o certificaciones DP-600/700.</p>
+					</div>
+					<div class="rounded-xl border border-emerald-500/20 bg-gradient-to-br from-emerald-950/30 to-slate-950/20 p-4">
+						<div class="mb-2 inline-flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-300">
+							<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 8v4l3 3M22 12a10 10 0 11-20 0 10 10 0 0120 0z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+						</div>
+						<p class="text-sm font-semibold text-white">Resolución de dudas complejas</p>
+						<p class="mt-1 text-xs leading-5 text-slate-400">DAX que no cuadra, contexto de filtros raro, medidas lentas, integración MCP con Claude.</p>
+					</div>
+					<div class="rounded-xl border border-indigo-500/20 bg-gradient-to-br from-indigo-950/30 to-slate-950/20 p-4">
+						<div class="mb-2 inline-flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-500/15 text-indigo-300">
+							<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a3 3 0 015.36-1.87M16 3.13a4 4 0 010 7.75M12 7a4 4 0 100 8 4 4 0 000-8z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+						</div>
+						<p class="text-sm font-semibold text-white">Formación para equipos</p>
+						<p class="mt-1 text-xs leading-5 text-slate-400">Sesiones a medida sobre Fabric, Power BI, arquitectura Medallion o IA aplicada.</p>
+					</div>
+					<div class="rounded-xl border border-pink-500/20 bg-gradient-to-br from-pink-950/30 to-slate-950/20 p-4">
+						<div class="mb-2 inline-flex h-8 w-8 items-center justify-center rounded-lg bg-pink-500/15 text-pink-300">
+							<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 12h8M8 16h5M4 20V6a2 2 0 012-2h9l5 5v11a2 2 0 01-2 2H6a2 2 0 01-2-2z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+						</div>
+						<p class="text-sm font-semibold text-white">Revisión de código / DAX</p>
+						<p class="mt-1 text-xs leading-5 text-slate-400">Code review de medidas, modelos semánticos, notebooks Fabric y patrones Delta.</p>
+					</div>
+				</div>
+			</section>
+
+			<div class="grid gap-8 lg:grid-cols-[1.35fr_1fr]">
+
+				<!-- Formulario -->
+				<section class="rounded-2xl border border-white/10 bg-zinc-950/70 p-6 shadow-[0_25px_70px_rgba(2,6,23,0.35)] sm:p-8">
+					<h2 class="text-xl font-black tracking-tight text-white">Cuéntame el caso</h2>
+					<p class="mt-2 text-sm leading-6 text-slate-400">
+						Cuanto más contexto, más útil será la respuesta. Todos los campos con <span class="text-violet-300">*</span> son obligatorios.
+					</p>
+
+					<form
+						id="contact-form"
+						class="mt-6 flex flex-col gap-4"
+						novalidate
+					>
+						<div class="grid gap-4 sm:grid-cols-2">
+							<div>
+								<label for="contact-name" class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-400">
+									Nombre <span class="text-violet-300">*</span>
+								</label>
+								<input
+									id="contact-name"
+									name="nombre"
+									type="text"
+									required
+									class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white placeholder-slate-500 outline-none transition focus:border-violet-400/50 focus:ring-2 focus:ring-violet-500/30"
+								/>
+							</div>
+							<div>
+								<label for="contact-empresa" class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-400">
+									Empresa
+								</label>
+								<input
+									id="contact-empresa"
+									name="empresa"
+									type="text"
+									class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white placeholder-slate-500 outline-none transition focus:border-violet-400/50 focus:ring-2 focus:ring-violet-500/30"
+								/>
+							</div>
+						</div>
+
+						<div>
+							<label for="contact-email" class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-400">
+								Email profesional <span class="text-violet-300">*</span>
+							</label>
+							<input
+								id="contact-email"
+								name="email"
+								type="email"
+								required
+								autocomplete="email"
+								class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white placeholder-slate-500 outline-none transition focus:border-violet-400/50 focus:ring-2 focus:ring-violet-500/30"
+							/>
+						</div>
+
+						<div>
+							<label for="contact-tipo" class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-400">
+								¿Qué necesitas? <span class="text-violet-300">*</span>
+							</label>
+							<select
+								id="contact-tipo"
+								name="tipo_servicio"
+								required
+								class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white outline-none transition focus:border-violet-400/50 focus:ring-2 focus:ring-violet-500/30"
+							>
+								<option value="" class="bg-[#0b1120]">Selecciona una opción…</option>
+								<option value="governance" class="bg-[#0b1120]">Governance Power BI / Fabric</option>
+								<option value="auditoria-arquitectura" class="bg-[#0b1120]">Auditoría de arquitectura de datos</option>
+								<option value="mentoria" class="bg-[#0b1120]">Mentoría 1-a-1</option>
+								<option value="duda-tecnica" class="bg-[#0b1120]">Resolución de duda técnica concreta (DAX, PySpark, MCP…)</option>
+								<option value="formacion-equipo" class="bg-[#0b1120]">Formación para mi equipo</option>
+								<option value="code-review" class="bg-[#0b1120]">Revisión de código / DAX / modelo semántico</option>
+								<option value="preparar-certificacion" class="bg-[#0b1120]">Preparación de certificación DP-600 / DP-700</option>
+								<option value="otro" class="bg-[#0b1120]">Otro (lo cuento abajo)</option>
+							</select>
+						</div>
+
+						<div>
+							<label for="contact-timeline" class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-400">
+								¿Cuándo lo necesitas?
+							</label>
+							<select
+								id="contact-timeline"
+								name="timeline"
+								class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white outline-none transition focus:border-violet-400/50 focus:ring-2 focus:ring-violet-500/30"
+							>
+								<option value="" class="bg-[#0b1120]">Sin definir aún</option>
+								<option value="urgente" class="bg-[#0b1120]">Urgente (menos de 1 mes)</option>
+								<option value="corto" class="bg-[#0b1120]">Corto plazo (1–3 meses)</option>
+								<option value="medio" class="bg-[#0b1120]">Medio plazo (3–6 meses)</option>
+								<option value="explorando" class="bg-[#0b1120]">Explorando opciones</option>
+							</select>
+						</div>
+
+						<div>
+							<label for="contact-mensaje" class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-slate-400">
+								Cuéntame el caso <span class="text-violet-300">*</span>
+							</label>
+							<textarea
+								id="contact-mensaje"
+								name="mensaje"
+								rows="5"
+								required
+								placeholder="Contexto, objetivos, tecnologías actuales, dónde os atascáis…"
+								class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white placeholder-slate-500 outline-none transition focus:border-violet-400/50 focus:ring-2 focus:ring-violet-500/30 resize-y"
+							></textarea>
+						</div>
+
+						<button
+							type="submit"
+							id="contact-btn"
+							class="mt-2 rounded-full bg-gradient-to-r from-violet-600 to-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-violet-600/25 transition hover:translate-y-[-1px] hover:shadow-violet-600/40 disabled:opacity-60"
+						>
+							Enviar mensaje
+						</button>
+
+						<p class="mt-1 text-xs text-slate-500">
+							Al enviar aceptas que responda a tu correo. No comparto tus datos con nadie ni te apunto a listas.
+						</p>
+					</form>
+
+					<!-- Success / error messages -->
+					<div
+						id="contact-success"
+						class="mt-4 hidden rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-5 py-4 text-sm text-emerald-300"
+					>
+						<p class="font-semibold">¡Mensaje enviado!</p>
+						<p class="mt-1 text-emerald-400/80">Te respondo en menos de 48 horas laborables al correo indicado.</p>
+					</div>
+
+					<div
+						id="contact-error"
+						class="mt-4 hidden rounded-xl border border-red-500/30 bg-red-500/10 px-5 py-4 text-sm text-red-300"
+					>
+						<p class="font-semibold">Ups, algo no fue bien.</p>
+						<p class="mt-1 text-red-400/80">Inténtalo de nuevo o escríbeme a <a href="mailto:fran.fuerte.grund@outlook.es" class="underline">fran.fuerte.grund@outlook.es</a>.</p>
+					</div>
+				</section>
+
+				<!-- Sidebar: alternativas rápidas -->
+				<aside class="flex flex-col gap-5">
+
+					<!-- Agenda -->
+					{SCHEDULING_URL ? (
+						<div class="rounded-2xl border border-cyan-500/20 bg-gradient-to-br from-cyan-950/40 to-teal-950/30 p-6">
+							<div class="mb-2 inline-flex items-center gap-2 rounded-full border border-cyan-400/25 bg-cyan-500/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.15em] text-cyan-200">
+								<span class="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
+								Más rápido
+							</div>
+							<h3 class="text-lg font-black tracking-tight text-white">Agenda una llamada</h3>
+							<p class="mt-2 text-sm leading-6 text-slate-300">
+								30 minutos. Zoom o Teams. Cuéntame el caso y vemos si encaja.
+							</p>
+							<a
+								href={SCHEDULING_URL}
+								target="_blank"
+								rel="noreferrer"
+								class="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-cyan-600 to-teal-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-cyan-600/25 transition hover:translate-y-[-1px]"
+							>
+								<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<path d="M8 2v3M16 2v3M3.5 9h17M4 6h16a1 1 0 011 1v13a1 1 0 01-1 1H4a1 1 0 01-1-1V7a1 1 0 011-1z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+								</svg>
+								Reservar un hueco →
+							</a>
+						</div>
+					) : (
+						<div class="rounded-2xl border border-white/10 bg-white/5 p-6 opacity-90">
+							<div class="mb-2 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.15em] text-slate-400">
+								Próximamente
+							</div>
+							<h3 class="text-lg font-black tracking-tight text-white">Agenda una llamada</h3>
+							<p class="mt-2 text-sm leading-6 text-slate-400">
+								Estoy configurando la agenda pública. Mientras tanto, envía el formulario y proponemos hueco por correo.
+							</p>
+						</div>
+					)}
+
+					<!-- LinkedIn -->
+					<a
+						href="https://www.linkedin.com/in/franfuertegrund/"
+						target="_blank"
+						rel="noreferrer"
+						class="group flex items-start gap-4 rounded-2xl border border-white/10 bg-white/5 p-5 transition hover:border-violet-400/40 hover:bg-white/10"
+					>
+						<div class="flex-shrink-0 rounded-xl bg-[#0077B5]/20 p-2.5 text-[#60a5fa]">
+							<svg viewBox="0 0 24 24" class="h-5 w-5" fill="currentColor" aria-hidden="true">
+								<path d="M6.94 8.5A1.56 1.56 0 1 0 6.94 5.38a1.56 1.56 0 0 0 0 3.12ZM5.5 9.75h2.88V18H5.5zM10.16 9.75h2.76v1.13h.04c.38-.72 1.31-1.48 2.7-1.48 2.89 0 3.42 1.9 3.42 4.37V18h-2.88v-3.88c0-1.08-.02-2.47-1.51-2.47-1.51 0-1.74 1.18-1.74 2.39V18h-2.87V9.75z" />
+							</svg>
+						</div>
+						<div>
+							<p class="text-sm font-semibold text-white group-hover:text-violet-200">LinkedIn</p>
+							<p class="mt-0.5 text-xs leading-5 text-slate-400">
+								Prefiero los DMs por LinkedIn para primeros contactos rápidos.
+							</p>
+						</div>
+					</a>
+
+					<!-- Email directo -->
+					<a
+						href="mailto:fran.fuerte.grund@outlook.es?subject=Proyecto%20de%20datos%20%2F%20IA"
+						class="group flex items-start gap-4 rounded-2xl border border-white/10 bg-white/5 p-5 transition hover:border-violet-400/40 hover:bg-white/10"
+					>
+						<div class="flex-shrink-0 rounded-xl bg-violet-500/15 p-2.5 text-violet-300">
+							<svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+								<path d="M3 8l9 6 9-6M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+							</svg>
+						</div>
+						<div>
+							<p class="text-sm font-semibold text-white group-hover:text-violet-200">Email directo</p>
+							<p class="mt-0.5 text-xs leading-5 text-slate-400 break-all">
+								fran.fuerte.grund@outlook.es
+							</p>
+						</div>
+					</a>
+
+					<!-- Response time badge -->
+					<div class="rounded-2xl border border-white/10 bg-black/20 p-5">
+						<div class="flex items-center gap-2 text-xs font-semibold text-slate-400">
+							<svg class="h-4 w-4 text-emerald-400" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+								<path d="M12 8v4l2 2M12 22a10 10 0 100-20 10 10 0 000 20z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+							</svg>
+							Tiempo de respuesta
+						</div>
+						<p class="mt-2 text-3xl font-black text-white">&lt; 48h</p>
+						<p class="mt-1 text-xs text-slate-500">En días laborables. Fines de semana algo más lento.</p>
+					</div>
+
+				</aside>
+			</div>
+
+			<!-- Bottom band: qué esperar -->
+			<section class="mt-12 rounded-2xl border border-white/10 bg-zinc-950/70 p-6 shadow-[0_25px_70px_rgba(2,6,23,0.35)] sm:p-8">
+				<h2 class="text-xl font-black tracking-tight text-white">¿Qué pasa después de escribirme?</h2>
+				<div class="mt-6 grid gap-5 sm:grid-cols-3">
+					<div>
+						<div class="mb-3 inline-flex h-8 w-8 items-center justify-center rounded-full bg-violet-500/15 text-violet-300 font-black text-sm">1</div>
+						<h3 class="text-sm font-semibold text-white">Leo tu mensaje</h3>
+						<p class="mt-1 text-xs leading-6 text-slate-400">
+							Respondo con preguntas concretas si me hace falta más contexto. Nada de plantillas genéricas.
+						</p>
+					</div>
+					<div>
+						<div class="mb-3 inline-flex h-8 w-8 items-center justify-center rounded-full bg-cyan-500/15 text-cyan-300 font-black text-sm">2</div>
+						<h3 class="text-sm font-semibold text-white">Llamada de 30 minutos</h3>
+						<p class="mt-1 text-xs leading-6 text-slate-400">
+							Si el caso encaja, agendamos. Sin compromiso, sin presupuesto en la primera. Solo evaluar juntos.
+						</p>
+					</div>
+					<div>
+						<div class="mb-3 inline-flex h-8 w-8 items-center justify-center rounded-full bg-amber-500/15 text-amber-300 font-black text-sm">3</div>
+						<h3 class="text-sm font-semibold text-white">Propuesta o derivación</h3>
+						<p class="mt-1 text-xs leading-6 text-slate-400">
+							Te propongo un enfoque concreto. Si no soy la mejor opción, te digo con quién hablar.
+						</p>
+					</div>
+				</div>
+			</section>
+
+		</main>
+
+		<Footer />
+	</div>
+</Layout>
+
+<script>
+	const form = document.getElementById('contact-form') as HTMLFormElement | null;
+	const btn = document.getElementById('contact-btn') as HTMLButtonElement | null;
+	const successMsg = document.getElementById('contact-success');
+	const errorMsg = document.getElementById('contact-error');
+
+	if (form) {
+		form.addEventListener('submit', async (e) => {
+			e.preventDefault();
+			successMsg?.classList.add('hidden');
+			errorMsg?.classList.add('hidden');
+
+			const fd = new FormData(form);
+			const payload = {
+				nombre: fd.get('nombre'),
+				empresa: fd.get('empresa') || '(no indicada)',
+				email: fd.get('email'),
+				tipo_servicio: fd.get('tipo_servicio'),
+				timeline: fd.get('timeline') || '(no indicado)',
+				mensaje: fd.get('mensaje'),
+				_subject: `Nuevo contacto — ${fd.get('tipo_servicio')} — ${fd.get('empresa') || 'sin empresa'}`,
+				_captcha: 'false',
+				_template: 'table',
+			};
+
+			if (!payload.nombre || !payload.email || !payload.tipo_servicio || !payload.mensaje) {
+				errorMsg?.classList.remove('hidden');
+				return;
+			}
+
+			if (btn) { btn.disabled = true; btn.textContent = 'Enviando…'; }
+
+			try {
+				const res = await fetch('https://formsubmit.co/ajax/fran.fuerte.grund@outlook.es', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+					body: JSON.stringify(payload),
+				});
+				if (res.ok) {
+					form.classList.add('hidden');
+					successMsg?.classList.remove('hidden');
+				} else {
+					throw new Error('Response not ok');
+				}
+			} catch {
+				errorMsg?.classList.remove('hidden');
+				if (btn) { btn.disabled = false; btn.textContent = 'Enviar mensaje'; }
+			}
+		});
+	}
+</script>
